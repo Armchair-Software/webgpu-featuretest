@@ -25,23 +25,50 @@ function(add_feature_test name bits)
   target_compile_definitions(${target} PRIVATE TEST_POINTER_BITS=${bits})
   target_compile_options(${target} PRIVATE
     -m${bits}
-    -fno-exceptions
     -Wall
     -Wextra
     -Wconversion
   )
   target_link_options(${target} PRIVATE
     -m${bits}
-    -fno-exceptions
     -sENVIRONMENT=web
-    -sALLOW_MEMORY_GROWTH=0
   )
+  if(name MATCHES "^exceptions")
+    if(name STREQUAL "exceptions_legacy")
+      set(legacy 1)
+    else()
+      set(legacy 0)
+    endif()
+    target_compile_options(${target} PRIVATE -fwasm-exceptions -sWASM_LEGACY_EXCEPTIONS=${legacy})
+    target_link_options(${target} PRIVATE -fwasm-exceptions -sWASM_LEGACY_EXCEPTIONS=${legacy})
+  else()
+    target_compile_options(${target} PRIVATE -fno-exceptions)
+    target_link_options(${target} PRIVATE -fno-exceptions)
+  endif()
+  if(name STREQUAL "simd")
+    target_compile_options(${target} PRIVATE -msimd128)
+  elseif(name STREQUAL "bulk_memory")
+    target_compile_options(${target} PRIVATE -mbulk-memory -mbulk-memory-opt)
+  elseif(name STREQUAL "stack")
+    target_link_options(${target} PRIVATE -sSTACK_SIZE=5mb)
+  endif()
+  if(name STREQUAL "memory_growth")
+    target_link_options(${target} PRIVATE -sALLOW_MEMORY_GROWTH=1 -sINITIAL_MEMORY=16mb -sMAXIMUM_MEMORY=64mb -sABORTING_MALLOC=0)
+  else()
+    target_link_options(${target} PRIVATE -sALLOW_MEMORY_GROWTH=0)
+  endif()
   add_dependencies(client ${target})
 endfunction()
 
 add_custom_target(client ALL)
-add_feature_test(basic 32)
-add_feature_test(basic 64)
+set(feature_tests basic exceptions_legacy exceptions simd bulk_memory memory_growth stack)
+foreach(name IN LISTS feature_tests)
+  add_feature_test(${name} 32)
+  add_feature_test(${name} 64)
+endforeach()
+# One build-generated list is shared by the checklist, iframe runner and smoke test.
+list(JOIN feature_tests "','" feature_names)
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test-list.js" "window.feature_tests = ['${feature_names}'];\n")
 
 foreach(file index.html style.css checklist.js runner.html runner.js smoke.js)
   configure_file(html/${file} ${file} COPYONLY)

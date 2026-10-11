@@ -6,6 +6,7 @@
     <title>Browser feature tests</title>
     <link rel="stylesheet" href="style.css">
     <script defer src="build-info.js"></script>
+    <script defer src="test-list.js"></script>
     <script defer src="checklist.js"></script>
     <script defer src="smoke.js"></script>
   </head>
@@ -20,7 +21,7 @@
         <div><span class="label">CROSS-ORIGIN ISOLATION</span><strong id="isolation">Checking…</strong></div>
         <div><span class="label">BUILD</span><strong id="build">Not built</strong></div>
       </section>
-      <p class="note">First stage: basic execution is live in both architectures. Other programs are planned; API detection alone is not a runtime pass.</p>
+      <p class="note">Each program runs independently in both architectures. API detection alone is not a runtime pass; unfinished tests are marked planned.</p>
       <div class="table-scroll">
         <table>
           <caption class="sr-only">Feature detection and independent wasm32 and wasm64 execution results</caption>

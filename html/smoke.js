@@ -8,7 +8,10 @@ if(location.hash === '#autoclose') {
     }
     const passed = document.querySelectorAll('td[data-state="passed"]').length;
     const failed = document.querySelectorAll('td[data-state="failed"]').length;
-    const code = passed === 2 && failed === 0 && crossOriginIsolated ? 0 : 1;
+    const code = passed === window.feature_tests.length * 2 && failed === 0 && crossOriginIsolated ? 0 : 1;
+    for(const cell of document.querySelectorAll('td[data-state="failed"]')) {
+      console.error(cell.parentElement.querySelector('.feature').textContent, cell.textContent);
+    }
     const detail = `${document.getElementById('summary').textContent}; isolated=${crossOriginIsolated}`;
     await fetch('stdio.html', {method: 'POST', body: `^out^1^${encodeURIComponent(detail)}`});
     await fetch('stdio.html', {method: 'POST', body: `^exit^${code}`});

@@ -17,7 +17,8 @@ window.Module = {
   print: text => console.log(text),
   printErr: text => console.error(text)
 };
-if(!/^basic_wasm(32|64)$/.test(target || '')) {
+const match = /^(\w+)_wasm(32|64)$/.exec(target || '');
+if(!match || !window.feature_tests?.includes(match[1])) {
   window.report_result(false, 'Unknown test target');
 } else {
   const script = document.createElement('script');
