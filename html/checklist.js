@@ -1,5 +1,6 @@
 'use strict';
 const features = [
+  ['canvas', 'Canvas 2D', 'Create context → fill → pixel readback', 'canvas'],
   ['basic', 'Basic WebAssembly execution', 'C++26 main · arithmetic · pointer width', 'wasm'],
   ['storage', 'Browser storage', 'Temporary localStorage write / read / remove', 'storage'],
   ['fetch', 'Fetch', 'C++ fetch → local fixture → verify bytes', 'fetch'],
@@ -8,7 +9,9 @@ const features = [
   ['dom', 'Embind & DOM', 'Basic execution → C++ / JavaScript round trip', 'dom'],
   ['bulk_memory', 'Bulk memory', 'Basic execution → memory copy / fill', 'bulk_memory'],
   ['memory_growth', 'Memory growth', 'Basic execution → grow and verify heap', 'memory_growth'],
-  ['maximum_memory', 'Custom maximum memory', 'Configured cap · not a capacity stress test'],
+  ['maximum_memory_2gb', 'Maximum memory · 2 GiB', 'MAXIMUM_MEMORY=2GB · 16 MiB initial heap', 'maximum_memory_2gb'],
+  ['maximum_memory_4gb', 'Maximum memory · 4 GiB', 'MAXIMUM_MEMORY=4GB · 16 MiB initial heap', 'maximum_memory_4gb'],
+  ['maximum_memory_8gb', 'Maximum memory · 8 GiB', 'MAXIMUM_MEMORY=8GB · 16 MiB initial heap', 'maximum_memory_8gb'],
   ['stack', 'Custom main stack', 'Basic execution → 5 MiB stack', 'configuration'],
   ['exceptions_legacy', 'Wasm exceptions · legacy', 'Basic execution → throw / catch / unwind', 'exceptions_legacy'],
   ['exceptions', 'Wasm exceptions · standardized', 'Basic execution → try_table', 'exceptions'],
@@ -16,13 +19,21 @@ const features = [
   ['relaxed_simd', 'Relaxed SIMD / FMA', 'SIMD128 → relaxed instructions', 'relaxed_simd'],
   ['atomics', 'Shared memory & atomics', 'Isolation → shared memory → atomic operations', 'shared'],
   ['workers', 'Wasm Workers', 'Shared memory → worker dispatch · 1 MiB stack', 'worker'],
-  ['synchronisation', 'Worker / worklet synchronization', 'Shared memory → locking and notification'],
-  ['pthreads', 'Pthread creation', 'Optional diagnostic · separate from synchronization'],
+  ['synchronisation', 'Worker / worklet synchronization', 'Wasm Workers + pthread support → shared locks', 'shared'],
+  ['pthreads', 'Pthread creation', 'Optional diagnostic · separate from synchronization', 'shared'],
   ['audio', 'Wasm audio worklets', 'Workers → audio processor · report autoplay restrictions', 'audio'],
+  ['webgl', 'WebGL 1', 'Create context → green clear → pixel readback', 'webgl'],
+  ['webgl2', 'WebGL 2', 'Create context → green clear → pixel readback', 'webgl2'],
   ['webgpu', 'WebGPU / emdawnwebgpu', 'Basic execution → adapter → device → green canvas', 'gpu'],
-  ['gpu_features', 'WebGPU feature extensions', 'Separate depth/stencil, BC, indirect and timestamp checks']
+  ['webgpu_depth_stencil', 'WebGPU · depth32float-stencil8', 'Depth/stencil texture and render pass'],
+  ['webgpu_bc', 'WebGPU · texture-compression-bc', 'Upload and sample a BC-compressed texture'],
+  ['webgpu_indirect', 'WebGPU · indirect-first-instance', 'Indirect draw with non-zero first instance'],
+  ['webgpu_timestamp', 'WebGPU · timestamp-query', 'Write and resolve GPU timestamps'],
+  ['webgpu_f16', 'WebGPU · shader-f16', 'Execute a shader using half-precision floats'],
+  ['webgpu_float32_filterable', 'WebGPU · float32-filterable', 'Filter a 32-bit float texture']
 ];
 const implemented = new Set(window.feature_tests || []);
+const unavailable = {maximum_memory_8gb_wasm32: 'Wasm32 address space is limited to 4 GiB'};
 const runs = new Map();
 const tbody = document.getElementById('tests');
 // Minimal wasm32 modules isolate instruction support from Emscripten startup.
@@ -39,6 +50,22 @@ function validate_instructions(instructions, memory = false) {
 }
 function instruction_detection(instructions, memory = false) {
   return validate_instructions(instructions, memory) ? 'Instruction probe accepted' : 'Instruction probe rejected';
+}
+function memory_limit_detection(gib) {
+  const pages = gib * 1024 * 1024 * 1024 / 65536;
+  return [32, 64].map(bits => {
+    if(bits === 32 && gib > 4) return 'wasm32: not applicable';
+    try {
+      const descriptor = bits === 64
+        ? {address: 'i64', initial: BigInt(1), maximum: BigInt(pages)}
+        : {address: 'i32', initial: 1, maximum: pages};
+      const memory = new WebAssembly.Memory(descriptor);
+      // Only one page is allocated. Acceptance does not promise growth to the cap.
+      return `wasm${bits}: ${memory.buffer.byteLength === 65536 ? 'accepted' : 'unexpected size'}`;
+    } catch(error) {
+      return `wasm${bits}: rejected (${error.name})`;
+    }
+  }).join(' · ');
 }
 function detection(probe) {
   try {
@@ -58,6 +85,9 @@ function detection(probe) {
         const zero = [0xfd, 0x0c, ...Array(16).fill(0)];
         return instruction_detection([...zero, ...zero, ...zero, 0xfd, 0x85, 0x02, 0x1a]);
       }
+      case 'canvas': return typeof CanvasRenderingContext2D === 'function' ? 'Canvas 2D API exposed' : 'Canvas 2D API unavailable';
+      case 'webgl': return typeof WebGLRenderingContext === 'function' ? 'WebGL 1 API exposed · context tested alongside' : 'WebGL 1 API unavailable';
+      case 'webgl2': return typeof WebGL2RenderingContext === 'function' ? 'WebGL 2 API exposed · context tested alongside' : 'WebGL 2 API unavailable';
       case 'storage': return typeof window.localStorage?.getItem === 'function' ? 'Storage API exposed' : 'Storage API unavailable';
       case 'dom': return typeof document.createElement === 'function' ? 'DOM API exposed' : 'DOM API unavailable';
       case 'bulk_memory':
@@ -73,6 +103,9 @@ function detection(probe) {
         return previous === 1 && memory.buffer.byteLength === 131072 && new Uint8Array(memory.buffer)[0] === 42
           ? 'JS memory growth verified' : 'JS memory growth failed';
       }
+      case 'maximum_memory_2gb': return memory_limit_detection(2);
+      case 'maximum_memory_4gb': return memory_limit_detection(4);
+      case 'maximum_memory_8gb': return memory_limit_detection(8);
       case 'configuration': return 'Build setting · verified by program';
       case 'shared': return crossOriginIsolated && typeof SharedArrayBuffer === 'function' && typeof Atomics === 'object' ? 'Shared-memory APIs exposed' : 'Isolation / shared-memory APIs unavailable';
       case 'worker': return typeof Worker === 'function' ? 'Worker API exposed' : 'Worker API unavailable';
@@ -89,7 +122,7 @@ function update_summary() {
   const passed = values.filter(run => run.state === 'passed').length;
   const failed = values.filter(run => run.state === 'failed').length;
   const running = values.filter(run => run.state === 'running').length;
-  document.getElementById('summary').textContent = `${passed} passed · ${failed} failed · ${running} running · ${features.filter(([id]) => !implemented.has(id)).length} feature rows planned`;
+  document.getElementById('summary').textContent = `${passed} passed · ${failed} failed · ${running} running · ${Object.keys(unavailable).length} not applicable · ${features.filter(([id]) => !implemented.has(id)).length} feature rows planned`;
   document.body.dataset.complete = String(running === 0);
 }
 function finish(run, state, detail) {
@@ -136,6 +169,18 @@ function start() {
     check.textContent = detection(probe);
     for(const bits of [32, 64]) {
       const cell = row.insertCell();
+      const target = `${id}_wasm${bits}`;
+      if(unavailable[target]) {
+        cell.dataset.state = 'unavailable';
+        const label = document.createElement('div');
+        label.className = 'preview';
+        label.textContent = 'Not applicable';
+        const detail = document.createElement('div');
+        detail.className = 'result';
+        detail.textContent = unavailable[target];
+        cell.append(label, detail);
+        continue;
+      }
       if(!implemented.has(id)) {
         const placeholder = document.createElement('div');
         placeholder.className = 'preview';
@@ -143,7 +188,6 @@ function start() {
         cell.append(placeholder);
         continue;
       }
-      const target = `${id}_wasm${bits}`;
       const frame = document.createElement('iframe');
       frame.title = `${title}, wasm${bits}`;
       frame.src = `runner.html?target=${target}`;
@@ -162,7 +206,7 @@ function start() {
 document.getElementById('context').textContent = isSecureContext ? 'Secure context' : 'Not a secure context';
 document.getElementById('isolation').textContent = crossOriginIsolated ? 'Enabled · shared memory permitted' : 'Disabled · workers may be blocked';
 const build = window.build_info;
-document.getElementById('build').textContent = build ? `${build.standard} · ${build.configuration} · ${build.compiler}` : 'Run ./build.sh and serve the build directory';
+document.getElementById('build').textContent = build ? `Emscripten ${build.emscripten} · ${build.compiler} · ${build.standard} · ${build.configuration}` : 'Run ./build.sh and serve the build directory';
 document.getElementById('browser').textContent = navigator.userAgent;
 document.getElementById('rerun').addEventListener('click', start);
 start();

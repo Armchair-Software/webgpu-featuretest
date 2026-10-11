@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Browser feature tests</title>
+    <title>Armchair Software browser feature tests</title>
     <link rel="stylesheet" href="style.css">
     <script defer src="build-info.js"></script>
     <script defer src="test-list.js"></script>
@@ -13,9 +13,10 @@
   <body>
     <main>
       <header>
-        <h1>Browser feature tests<span class="dot">.</span></h1>
+        <h1>Armchair Software browser feature tests<span class="dot">.</span></h1>
         <div class="toolbar"><p id="summary" aria-live="polite">Preparing tests…</p><button id="rerun" type="button">Run again ↻</button></div>
       </header>
+      <p id="browser" aria-label="Browser user agent"></p>
       <section class="environment" aria-label="Environment">
         <div><span class="label">CONTEXT</span><strong id="context">Checking…</strong></div>
         <div><span class="label">CROSS-ORIGIN ISOLATION</span><strong id="isolation">Checking…</strong></div>
@@ -29,7 +30,7 @@
           <tbody id="tests"></tbody>
         </table>
       </div>
-      <footer><span>✓ Verified execution <span class="legend-fail">× Failed execution</span> · Planned = not implemented</span><span id="browser"></span></footer>
+      <footer><span>✓ Verified execution <span class="legend-fail">× Failed execution</span> · Planned = not implemented</span></footer>
       <noscript>JavaScript must be enabled to run these checks.</noscript>
     </main>
   </body>

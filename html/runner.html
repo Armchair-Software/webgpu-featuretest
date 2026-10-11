@@ -5,7 +5,9 @@
       body { margin: 0; background: #20312a; color: #dcece4; font: 12px system-ui, sans-serif; display: grid; place-items: center; height: 100vh; }
       body[data-state="passed"] { background: #168249; color: white; }
       body[data-state="failed"] { background: #a92d38; color: white; }
+      canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+      #status { position: relative; }
     </style>
   </head>
-  <body><span id="status">Running…</span><script src="test-list.js"></script><script src="runner.js"></script></body>
+  <body><canvas id="canvas" width="128" height="28" hidden></canvas><span id="status">Running…</span><script src="test-list.js"></script><script src="runner.js"></script></body>
 </html>
