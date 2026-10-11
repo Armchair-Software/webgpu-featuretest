@@ -125,7 +125,7 @@ function update_summary() {
   const failed = values.filter(run => run.state === 'failed').length;
   const blocked = values.filter(run => run.state === 'blocked').length;
   const running = values.filter(run => run.state === 'running').length;
-  document.getElementById('summary').textContent = `${passed} passed · ${failed} failed · ${blocked} blocked · ${running} running · ${Object.keys(unavailable).length} not applicable · ${features.filter(([id]) => !implemented.has(id)).length} feature rows planned`;
+  document.getElementById('summary').textContent = `${passed} passed · ${failed} failed · ${blocked} blocked · ${running} running · ${Object.keys(unavailable).length} not applicable`;
   document.body.dataset.complete = String(running === 0);
 }
 function finish(run, state, detail) {
@@ -135,14 +135,40 @@ function finish(run, state, detail) {
   run.result.textContent = detail;
   run.result.classList.toggle('failed', state === 'failed');
   run.cell.dataset.state = state;
-  if(state === 'failed' || state === 'blocked') {
-    // Stop failed, timed-out or suspended programs and their background resources.
+  if(state === 'blocked') {
+    // Keep the suspended context so the click can resume it synchronously.
+    run.frame.style.display = 'none';
+    const button = document.createElement('button');
+    button.className = 'audio-retry';
+    button.textContent = 'Click to test';
+    button.addEventListener('click', retry_audio);
+    run.cell.prepend(button);
+  } else if(state === 'failed') {
+    // Stop failed or timed-out programs and their background resources.
     const preview = document.createElement('div');
     preview.className = 'preview';
-    preview.style.background = state === 'blocked' ? '#805b16' : '#a92d38';
+    preview.style.background = '#a92d38';
     preview.style.color = 'white';
-    preview.textContent = state === 'blocked' ? '— Audio suspended' : '× Execution failed';
+    preview.textContent = '× Execution failed';
     run.frame.replaceWith(preview);
+  }
+  update_summary();
+}
+function retry_audio() {
+  for(const run of runs.values()) {
+    if(run.state !== 'blocked') continue;
+    run.cell.querySelector('.audio-retry').remove();
+    run.frame.style.display = '';
+    run.state = 'running';
+    run.cell.dataset.state = 'running';
+    run.result.textContent = 'Testing silent audio…';
+    run.timer = setTimeout(() => finish(run, 'failed', 'Timed out after 15 seconds'), 15000);
+    try {
+      // A direct same-origin call preserves the click's user activation.
+      run.frame.contentWindow.resume_audio_test();
+    } catch(error) {
+      finish(run, 'failed', String(error));
+    }
   }
   update_summary();
 }

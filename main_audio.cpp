@@ -19,15 +19,15 @@ auto cleanup()->void {
 auto check_processing(void *)->void {
   if(processed_blocks.load() > 0) {
     cleanup();
-    test_result(true, "Wasm worklet processed silent audio on its own thread · 4 KiB stack");
+    test_result(true, "Worklet silent audio · 4 KiB stack");
   } else if(emscripten_get_now() < deadline) {
     emscripten_async_call(check_processing, nullptr, 50);
   } else {
     auto const state{emscripten_audio_context_state(context)};
-    cleanup();
     if(state == AUDIO_CONTEXT_STATE_SUSPENDED) {
-      EM_ASM({ window.report_blocked('Worklet created; audio context suspended (autoplay may require interaction)'); });
+      EM_ASM({ window.report_blocked('Audio suspended · click to test'); });
     } else {
+      cleanup();
       test_result(false, "Worklet created but no audio processed within 2 seconds");
     }
   }
@@ -81,6 +81,13 @@ auto thread_started(EMSCRIPTEN_WEBAUDIO_T, bool success, void *)->void {
   emscripten_create_wasm_audio_worklet_processor_async(context, &options, processor_created, nullptr);
 }
 } // namespace
+
+// Called synchronously from the retry button, while user activation is present.
+extern "C" EMSCRIPTEN_KEEPALIVE auto resume_audio_test()->void {
+  emscripten_resume_audio_context_sync(context);
+  deadline = emscripten_get_now() + 2000;
+  check_processing(nullptr);
+}
 
 auto main()->int {
   EmscriptenWebAudioCreateAttributes options{};

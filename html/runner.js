@@ -11,6 +11,13 @@ function report(state, detail) {
 }
 window.report_result = (passed, detail) => report(passed ? 'passed' : 'failed', detail);
 window.report_blocked = detail => report('blocked', detail);
+window.resume_audio_test = () => {
+  if(document.body.dataset.state !== 'blocked') return;
+  finished = false;
+  document.body.dataset.state = 'running';
+  document.getElementById('status').textContent = 'Running…';
+  Module._resume_audio_test();
+};
 window.addEventListener('error', event => window.report_result(false, event.message));
 window.addEventListener('unhandledrejection', event => window.report_result(false, String(event.reason)));
 window.Module = {

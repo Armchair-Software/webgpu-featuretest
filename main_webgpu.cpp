@@ -65,7 +65,7 @@ auto render()->void {
       readback.Unmap();
       readback.Destroy();
       if(passed) EM_ASM({ document.getElementById('canvas').hidden = false; });
-      test_result(passed, passed ? "emdawnwebgpu device · canvas clear and GPU readback verified" : "GPU pixel did not match #168249");
+      test_result(passed, passed ? "Canvas clear · GPU readback verified" : "GPU pixel did not match #168249");
     });
 }
 } // namespace
