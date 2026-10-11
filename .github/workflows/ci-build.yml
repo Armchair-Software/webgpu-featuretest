@@ -1,0 +1,72 @@
+name: Build and deploy Pages
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Match the locally tested SDK; update explicitly when upgrading the toolchain.
+  EMSCRIPTEN_VERSION: '6.0.9'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Debug, Release]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Emscripten toolchain
+        uses: slowriot/setup-emsdk@v15
+        with:
+          version: ${{ env.EMSCRIPTEN_VERSION }}
+      - name: Configure
+        # build.sh sources a machine-specific SDK path; use the action's PATH here.
+        run: emcmake cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+      - name: Build all feature tests
+        run: cmake --build build --parallel "$(nproc)" --target client
+      - name: Stage the static site
+        if: matrix.build_type == 'Release'
+        run: |
+          mkdir deploy
+          # Include generated worker/worklet scripts and preloaded filesystem data,
+          # but exclude CMake internals, object files and compiler metadata.
+          find build -maxdepth 1 -type f \( \
+            -name '*.html' -o -name '*.css' -o -name '*.js' -o \
+            -name '*.wasm' -o -name '*.data' -o -name 'fixture.txt' \
+          \) -exec cp {} deploy/ \;
+          test -s deploy/index.html
+          test -s deploy/test-list.js
+          test -s deploy/basic_wasm32.wasm
+          test -s deploy/basic_wasm64.wasm
+      - name: Upload GitHub Pages artifact
+        if: matrix.build_type == 'Release' && github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: deploy
+
+  deploy-pages:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
