@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8"><title>Feature test</title>
+    <style>
+      body { margin: 0; background: #20312a; color: #dcece4; font: 12px system-ui, sans-serif; display: grid; place-items: center; height: 100vh; }
+      body[data-state="passed"] { background: #168249; color: white; }
+      body[data-state="failed"] { background: #a92d38; color: white; }
+    </style>
+  </head>
+  <body><span id="status">Running…</span><script src="runner.js"></script></body>
+</html>
