@@ -46,6 +46,8 @@ jobs:
             -name '*.html' -o -name '*.css' -o -name '*.js' -o \
             -name '*.wasm' -o -name '*.data' -o -name 'fixture.txt' \
           \) -exec cp {} deploy/ \;
+          cp build/social-preview.jpg deploy/
+          test -s deploy/social-preview.jpg
           test -s deploy/index.html
           test -s deploy/test-list.js
           test -s deploy/basic_wasm32.wasm
