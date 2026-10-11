@@ -1,4 +1,5 @@
 #include <cstddef>
+#include <cstdio>
 #include <emscripten/stack.h>
 #include "test_result.h"
 
@@ -15,9 +16,14 @@ namespace {
 }
 
 auto main()->int {
-  bool const configured{emscripten_stack_get_base() - emscripten_stack_get_end() == 5 * 1024 * 1024};
+  auto const size{emscripten_stack_get_base() - emscripten_stack_get_end()};
+  auto const available{emscripten_stack_get_free()};
+  bool const configured{size == 5 * 1024 * 1024};
   if(!configured) return test_result(false, "Stack bounds differ from configured 5 MiB");
   auto const before{emscripten_stack_get_current()};
   bool const passed{exercise_stack() && emscripten_stack_get_current() == before};
-  return test_result(passed, passed ? "5 MiB stack · 1 MiB local array verified" : "Stack data or restored stack pointer differs");
+  char detail[160]{};
+  std::snprintf(detail, sizeof(detail), "Stack %.0f KiB · free %.2f KiB · 1 MiB verified",
+    static_cast<double>(size) / 1024.0, static_cast<double>(available) / 1024.0);
+  return test_result(passed, passed ? detail : "Stack data or restored stack pointer differs");
 }

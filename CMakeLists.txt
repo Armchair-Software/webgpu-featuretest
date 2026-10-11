@@ -929,6 +929,110 @@ target_link_options(webgl2_wasm64 PRIVATE
   -sALLOW_MEMORY_GROWTH=0
 )
 
+add_executable(audio_buffer_wasm32 main_audio_buffer.cpp)
+set_target_properties(audio_buffer_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(audio_buffer_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(audio_buffer_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fno-exceptions
+)
+target_link_options(audio_buffer_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+)
+
+add_executable(audio_buffer_wasm64 main_audio_buffer.cpp)
+set_target_properties(audio_buffer_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(audio_buffer_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(audio_buffer_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fno-exceptions
+)
+target_link_options(audio_buffer_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+)
+
+add_executable(audio_wasm32 main_audio.cpp)
+set_target_properties(audio_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(audio_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(audio_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fno-exceptions
+  -pthread
+  -sWASM_WORKERS=1
+)
+target_link_options(audio_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web,worker
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  -pthread
+  -sWASM_WORKERS=1
+  -sAUDIO_WORKLET=1
+)
+
+add_executable(audio_wasm64 main_audio.cpp)
+set_target_properties(audio_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(audio_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(audio_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fno-exceptions
+  -pthread
+  -sWASM_WORKERS=1
+)
+target_link_options(audio_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web,worker
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  -pthread
+  -sWASM_WORKERS=1
+  -sAUDIO_WORKLET=1
+)
+
+add_executable(webgpu_wasm32 main_webgpu.cpp)
+set_target_properties(webgpu_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(webgpu_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_wasm64 main_webgpu.cpp)
+set_target_properties(webgpu_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
 # Build the complete suite with ./build.sh or the client target.
 add_custom_target(client ALL DEPENDS
   basic_wasm32 basic_wasm64
@@ -954,6 +1058,9 @@ add_custom_target(client ALL DEPENDS
   canvas_wasm32 canvas_wasm64
   webgl_wasm32 webgl_wasm64
   webgl2_wasm32 webgl2_wasm64
+  audio_buffer_wasm32 audio_buffer_wasm64
+  audio_wasm32 audio_wasm64
+  webgpu_wasm32 webgpu_wasm64
 )
 
 # Feature names used by the browser checklist; no build options are assigned here.
@@ -981,6 +1088,9 @@ set(feature_tests
   canvas
   webgl
   webgl2
+  audio_buffer
+  audio
+  webgpu
 )
 
 configure_file(assets/fixture.txt fixture.txt COPYONLY)

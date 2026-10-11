@@ -8,8 +8,9 @@ if(location.hash === '#autoclose') {
     }
     const passed = document.querySelectorAll('td[data-state="passed"]').length;
     const failed = document.querySelectorAll('td[data-state="failed"]').length;
-    const code = passed === window.feature_tests.length * 2 && failed === 0 && crossOriginIsolated ? 0 : 1;
-    const failures = [...document.querySelectorAll('td[data-state="failed"]')].map(cell =>
+    const unavailable = document.querySelectorAll('td[data-state="unavailable"]').length;
+    const code = passed + unavailable === window.feature_tests.length * 2 && failed === 0 && crossOriginIsolated ? 0 : 1;
+    const failures = [...document.querySelectorAll('td[data-state="failed"], td[data-state="blocked"]')].map(cell =>
       `${cell.parentElement.querySelector('.feature').textContent}: ${cell.textContent}`);
     const detail = `${document.getElementById('summary').textContent}; isolated=${crossOriginIsolated}`;
     await fetch('stdio.html', {method: 'POST', body: `^out^1^${encodeURIComponent([detail, ...failures].join('\n'))}`});

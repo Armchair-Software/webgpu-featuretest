@@ -2,14 +2,15 @@
 const parameters = new URLSearchParams(location.search);
 const target = parameters.get('target');
 let finished = false;
-window.report_result = (passed, detail) => {
+function report(state, detail) {
   if(finished) return;
   finished = true;
-  const state = passed ? 'passed' : 'failed';
   document.body.dataset.state = state;
-  document.getElementById('status').textContent = passed ? '✓ Execution verified' : '× Execution failed';
+  document.getElementById('status').textContent = state === 'passed' ? '✓ Execution verified' : state === 'blocked' ? '— Audio suspended' : '× Execution failed';
   parent.postMessage({type: 'feature-result', target, state, detail: String(detail)}, location.origin);
-};
+}
+window.report_result = (passed, detail) => report(passed ? 'passed' : 'failed', detail);
+window.report_blocked = detail => report('blocked', detail);
 window.addEventListener('error', event => window.report_result(false, event.message));
 window.addEventListener('unhandledrejection', event => window.report_result(false, String(event.reason)));
 window.Module = {

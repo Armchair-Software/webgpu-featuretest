@@ -21,6 +21,7 @@ const features = [
   ['workers', 'Wasm Workers', 'Shared memory → worker dispatch · 1 MiB stack', 'worker'],
   ['synchronisation', 'Worker / worklet synchronization', 'Wasm Workers + pthread support → shared locks', 'shared'],
   ['pthreads', 'Pthread creation', 'Optional diagnostic · separate from synchronization', 'shared'],
+  ['audio_buffer', 'Web Audio · offline rendering', 'Audio buffer → graph → verify rendered samples · silent', 'audio_buffer'],
   ['audio', 'Wasm audio worklets', 'Workers → audio processor · report autoplay restrictions', 'audio'],
   ['webgl', 'WebGL 1', 'Create context → green clear → pixel readback', 'webgl'],
   ['webgl2', 'WebGL 2', 'Create context → green clear → pixel readback', 'webgl2'],
@@ -110,6 +111,7 @@ function detection(probe) {
       case 'shared': return crossOriginIsolated && typeof SharedArrayBuffer === 'function' && typeof Atomics === 'object' ? 'Shared-memory APIs exposed' : 'Isolation / shared-memory APIs unavailable';
       case 'worker': return typeof Worker === 'function' ? 'Worker API exposed' : 'Worker API unavailable';
       case 'gpu': return navigator.gpu ? 'WebGPU API exposed · adapter not tested' : 'WebGPU API unavailable';
+      case 'audio_buffer': return `AudioContext ${typeof AudioContext === 'function' ? 'exposed' : 'unavailable'} · OfflineAudioContext ${typeof OfflineAudioContext === 'function' ? 'exposed' : 'unavailable'}`;
       case 'audio': return typeof AudioWorkletNode === 'function' ? 'AudioWorklet API exposed' : 'AudioWorklet API unavailable';
       case 'fetch': return typeof XMLHttpRequest === 'function' ? 'XHR API exposed · used by Emscripten fetch' : 'XHR API unavailable';
       case 'websocket': return typeof WebSocket === 'function' ? 'WebSocket API exposed · connectivity untested' : 'WebSocket API unavailable';
@@ -121,8 +123,9 @@ function update_summary() {
   const values = [...runs.values()];
   const passed = values.filter(run => run.state === 'passed').length;
   const failed = values.filter(run => run.state === 'failed').length;
+  const blocked = values.filter(run => run.state === 'blocked').length;
   const running = values.filter(run => run.state === 'running').length;
-  document.getElementById('summary').textContent = `${passed} passed · ${failed} failed · ${running} running · ${Object.keys(unavailable).length} not applicable · ${features.filter(([id]) => !implemented.has(id)).length} feature rows planned`;
+  document.getElementById('summary').textContent = `${passed} passed · ${failed} failed · ${blocked} blocked · ${running} running · ${Object.keys(unavailable).length} not applicable · ${features.filter(([id]) => !implemented.has(id)).length} feature rows planned`;
   document.body.dataset.complete = String(running === 0);
 }
 function finish(run, state, detail) {
@@ -132,13 +135,13 @@ function finish(run, state, detail) {
   run.result.textContent = detail;
   run.result.classList.toggle('failed', state === 'failed');
   run.cell.dataset.state = state;
-  if(state === 'failed') {
-    // Replace the frame on failure/timeout, stopping its program and late messages.
+  if(state === 'failed' || state === 'blocked') {
+    // Stop failed, timed-out or suspended programs and their background resources.
     const preview = document.createElement('div');
     preview.className = 'preview';
-    preview.style.background = '#a92d38';
+    preview.style.background = state === 'blocked' ? '#805b16' : '#a92d38';
     preview.style.color = 'white';
-    preview.textContent = '× Execution failed';
+    preview.textContent = state === 'blocked' ? '— Audio suspended' : '× Execution failed';
     run.frame.replaceWith(preview);
   }
   update_summary();
@@ -147,7 +150,7 @@ window.addEventListener('message', event => {
   if(event.origin !== location.origin || event.data?.type !== 'feature-result') return;
   const run = runs.get(event.data.target);
   if(!run || event.source !== run.frame.contentWindow) return;
-  if(!['passed', 'failed'].includes(event.data.state)) return;
+  if(!['passed', 'failed', 'blocked'].includes(event.data.state)) return;
   finish(run, event.data.state, String(event.data.detail));
 });
 function start() {
