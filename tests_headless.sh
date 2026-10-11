@@ -22,7 +22,7 @@ emrun \
   --port "${PORT:-7948}" \
   --serve_root "$build_dir" \
   --kill_exit \
-  --timeout 30 \
+  --timeout "${TEST_TIMEOUT:-120}" \
   --timeout-returncode 1 \
   --browser "$browser" \
   --browser_args="--headless --no-sandbox --no-zygote --disable-background-networking --user-data-dir=$browser_profile ${EXTRA_BROWSER_ARGS:-}" \

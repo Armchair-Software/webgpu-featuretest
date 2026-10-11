@@ -1028,6 +1028,524 @@ target_link_options(webgpu_wasm64 PRIVATE
   --use-port=emdawnwebgpu
 )
 
+add_executable(webgpu_depth_stencil_wasm32 main_webgpu_depth_stencil.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_depth_stencil_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_depth_stencil_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(webgpu_depth_stencil_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_depth_stencil_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_depth_stencil_wasm64 main_webgpu_depth_stencil.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_depth_stencil_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_depth_stencil_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_depth_stencil_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_depth_stencil_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_bc_wasm32 main_webgpu_bc.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_bc_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_bc_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(webgpu_bc_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_bc_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_bc_wasm64 main_webgpu_bc.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_bc_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_bc_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_bc_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_bc_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_indirect_wasm32 main_webgpu_indirect.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_indirect_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_indirect_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(webgpu_indirect_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_indirect_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_indirect_wasm64 main_webgpu_indirect.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_indirect_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_indirect_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_indirect_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_indirect_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_timestamp_wasm32 main_webgpu_timestamp.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_timestamp_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_timestamp_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(webgpu_timestamp_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_timestamp_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_timestamp_wasm64 main_webgpu_timestamp.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_timestamp_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_timestamp_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_timestamp_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_timestamp_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_f16_wasm32 main_webgpu_f16.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_f16_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_f16_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(webgpu_f16_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_f16_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_f16_wasm64 main_webgpu_f16.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_f16_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_f16_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_f16_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_f16_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_float32_filterable_wasm32 main_webgpu_float32_filterable.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_float32_filterable_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_float32_filterable_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(webgpu_float32_filterable_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_float32_filterable_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_float32_filterable_wasm64 main_webgpu_float32_filterable.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_float32_filterable_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_float32_filterable_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_float32_filterable_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_float32_filterable_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_compute_wasm32 main_webgpu_compute.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_compute_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_compute_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(webgpu_compute_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_compute_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_compute_wasm64 main_webgpu_compute.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_compute_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_compute_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_compute_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_compute_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_render_wasm32 main_webgpu_render.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_render_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_render_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(webgpu_render_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_render_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_render_wasm64 main_webgpu_render.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_render_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_render_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_render_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_render_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_worker_wasm32 main_webgpu_worker.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_worker_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_worker_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(webgpu_worker_wasm32 PRIVATE
+  -pthread # emdawnwebgpu uses mutexes; this test creates a Wasm Worker.
+  -m32
+  ${warning_options}
+  -fno-exceptions
+  -sWASM_WORKERS=1
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_worker_wasm32 PRIVATE
+  -pthread # emdawnwebgpu uses mutexes; this test creates a Wasm Worker.
+  -m32
+  -sENVIRONMENT=web,worker
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  -sWASM_WORKERS=1
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_worker_wasm64 main_webgpu_worker.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_worker_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_worker_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_worker_wasm64 PRIVATE
+  -pthread # emdawnwebgpu uses mutexes; this test creates a Wasm Worker.
+  -m64
+  ${warning_options}
+  -fno-exceptions
+  -sWASM_WORKERS=1
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_worker_wasm64 PRIVATE
+  -pthread # emdawnwebgpu uses mutexes; this test creates a Wasm Worker.
+  -m64
+  -sENVIRONMENT=web,worker
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  -sWASM_WORKERS=1
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_etc2_wasm32 main_webgpu_etc2.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_etc2_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_etc2_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(webgpu_etc2_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_etc2_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_etc2_wasm64 main_webgpu_etc2.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_etc2_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_etc2_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_etc2_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_etc2_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_astc_wasm32 main_webgpu_astc.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_astc_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_astc_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(webgpu_astc_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_astc_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_astc_wasm64 main_webgpu_astc.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_astc_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_astc_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_astc_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_astc_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(exceptions_js_wasm32 main_exceptions_js.cpp)
+set_target_properties(exceptions_js_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(exceptions_js_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(exceptions_js_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fexceptions
+  -sDISABLE_EXCEPTION_CATCHING=0
+)
+target_link_options(exceptions_js_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fexceptions
+  -sDISABLE_EXCEPTION_CATCHING=0
+)
+
+add_executable(exceptions_js_wasm64 main_exceptions_js.cpp)
+set_target_properties(exceptions_js_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(exceptions_js_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(exceptions_js_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fexceptions
+  -sDISABLE_EXCEPTION_CATCHING=0
+)
+target_link_options(exceptions_js_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fexceptions
+  -sDISABLE_EXCEPTION_CATCHING=0
+)
+
+add_executable(webgpu_indexed_wasm32 main_webgpu_indexed.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_indexed_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_indexed_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(webgpu_indexed_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_indexed_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_indexed_wasm64 main_webgpu_indexed.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_indexed_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_indexed_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_indexed_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_indexed_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_uniform_wasm32 main_webgpu_uniform.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_uniform_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_uniform_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(webgpu_uniform_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_uniform_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_uniform_wasm64 main_webgpu_uniform.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_uniform_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_uniform_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_uniform_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_uniform_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_bundles_wasm32 main_webgpu_bundles.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_bundles_wasm32 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_bundles_wasm32 PRIVATE TEST_POINTER_BITS=32)
+target_compile_options(webgpu_bundles_wasm32 PRIVATE
+  -m32
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_bundles_wasm32 PRIVATE
+  -m32
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_bundles_wasm64 main_webgpu_bundles.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_bundles_wasm64 PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_bundles_wasm64 PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_bundles_wasm64 PRIVATE
+  -m64
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_bundles_wasm64 PRIVATE
+  -m64
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+
 # Build the complete suite with ./build.sh or the client target.
 add_custom_target(client ALL DEPENDS
   basic_wasm32 basic_wasm64
@@ -1038,6 +1556,7 @@ add_custom_target(client ALL DEPENDS
   websocket_wasm32 websocket_wasm64
   exceptions_legacy_wasm32 exceptions_legacy_wasm64
   exceptions_wasm32 exceptions_wasm64
+  exceptions_js_wasm32 exceptions_js_wasm64
   simd_wasm32 simd_wasm64
   relaxed_simd_wasm32 relaxed_simd_wasm64
   bulk_memory_wasm32 bulk_memory_wasm64
@@ -1056,6 +1575,20 @@ add_custom_target(client ALL DEPENDS
   audio_buffer_wasm32 audio_buffer_wasm64
   audio_wasm32 audio_wasm64
   webgpu_wasm32 webgpu_wasm64
+  webgpu_compute_wasm32 webgpu_compute_wasm64
+  webgpu_render_wasm32 webgpu_render_wasm64
+  webgpu_indexed_wasm32 webgpu_indexed_wasm64
+  webgpu_uniform_wasm32 webgpu_uniform_wasm64
+  webgpu_bundles_wasm32 webgpu_bundles_wasm64
+  webgpu_worker_wasm32 webgpu_worker_wasm64
+  webgpu_etc2_wasm32 webgpu_etc2_wasm64
+  webgpu_astc_wasm32 webgpu_astc_wasm64
+  webgpu_depth_stencil_wasm32 webgpu_depth_stencil_wasm64
+  webgpu_bc_wasm32 webgpu_bc_wasm64
+  webgpu_indirect_wasm32 webgpu_indirect_wasm64
+  webgpu_timestamp_wasm32 webgpu_timestamp_wasm64
+  webgpu_f16_wasm32 webgpu_f16_wasm64
+  webgpu_float32_filterable_wasm32 webgpu_float32_filterable_wasm64
 )
 
 # Feature names used by the browser checklist; no build options are assigned here.
@@ -1068,6 +1601,7 @@ set(feature_tests
   websocket
   exceptions_legacy
   exceptions
+  exceptions_js
   simd
   relaxed_simd
   bulk_memory
@@ -1086,6 +1620,20 @@ set(feature_tests
   audio_buffer
   audio
   webgpu
+  webgpu_compute
+  webgpu_render
+  webgpu_indexed
+  webgpu_uniform
+  webgpu_bundles
+  webgpu_worker
+  webgpu_etc2
+  webgpu_astc
+  webgpu_depth_stencil
+  webgpu_bc
+  webgpu_indirect
+  webgpu_timestamp
+  webgpu_f16
+  webgpu_float32_filterable
 )
 
 configure_file(assets/fixture.txt fixture.txt COPYONLY)

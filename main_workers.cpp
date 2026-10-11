@@ -26,6 +26,10 @@ auto run_worker()->void {
 }
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE auto cleanup_test()->void {
+  emscripten_terminate_all_wasm_workers();
+}
+
 auto main()->int {
   worker = emscripten_malloc_wasm_worker(1024 * 1024);
   if(worker == 0) return test_result(false, "Could not create Wasm Worker");

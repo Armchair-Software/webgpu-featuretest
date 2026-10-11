@@ -2,6 +2,14 @@
 const parameters = new URLSearchParams(location.search);
 const target = parameters.get('target');
 let finished = false;
+let disposed = false;
+window.cleanup_test = () => {
+  if(disposed) return;
+  disposed = true;
+  finished = true;
+  window.Module?._cleanup_test?.();
+};
+window.addEventListener('pagehide', window.cleanup_test);
 function report(state, detail) {
   if(finished) return;
   finished = true;

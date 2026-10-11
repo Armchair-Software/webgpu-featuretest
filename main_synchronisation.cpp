@@ -41,6 +41,10 @@ auto check_held_lock()->void {
 }
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE auto cleanup_test()->void {
+  emscripten_terminate_all_wasm_workers();
+}
+
 auto main()->int {
   for(auto &worker : workers) {
     worker = emscripten_malloc_wasm_worker(1024 * 1024);

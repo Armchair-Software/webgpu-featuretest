@@ -12,6 +12,27 @@ wgpu::Adapter adapter;
 wgpu::Device device;
 wgpu::Buffer readback;
 wgpu::TextureFormat format;
+bool stopped{};
+bool configured{};
+
+auto cleanup()->void {
+  stopped = true;
+  if(configured) surface.Unconfigure();
+  configured = false;
+  if(readback) readback.Destroy();
+  readback = nullptr;
+  if(device) device.Destroy();
+  device = nullptr;
+  surface = nullptr;
+  adapter = nullptr;
+  instance = nullptr;
+}
+
+auto report(bool passed, char const *detail)->void {
+  if(stopped) return;
+  cleanup();
+  test_result(passed, detail);
+}
 
 auto fail(char const *stage, wgpu::StringView message)->void {
   std::string detail{stage};
@@ -19,7 +40,7 @@ auto fail(char const *stage, wgpu::StringView message)->void {
     detail += ": ";
     detail.append(message.data, message.length);
   }
-  test_result(false, detail.c_str());
+  report(false, detail.c_str());
 }
 
 auto render()->void {
@@ -29,10 +50,11 @@ auto render()->void {
     .width = 128, .height = 28, .presentMode = wgpu::PresentMode::Fifo
   };
   surface.Configure(&configuration);
+  configured = true;
   wgpu::SurfaceTexture frame{};
   surface.GetCurrentTexture(&frame);
   if(!frame.texture) {
-    test_result(false, "WebGPU canvas texture unavailable");
+    report(false, "WebGPU canvas texture unavailable");
     return;
   }
   wgpu::BufferDescriptor buffer_descriptor{
@@ -55,6 +77,7 @@ auto render()->void {
   device.GetQueue().Submit(1, &commands);
   readback.MapAsync(wgpu::MapMode::Read, 0, 256, wgpu::CallbackMode::AllowSpontaneous,
     [](wgpu::MapAsyncStatus status, wgpu::StringView message) {
+      if(stopped) return;
       if(status != wgpu::MapAsyncStatus::Success) {
         fail("GPU readback failed", message);
         return;
@@ -65,10 +88,14 @@ auto render()->void {
       readback.Unmap();
       readback.Destroy();
       if(passed) EM_ASM({ document.getElementById('canvas').hidden = false; });
-      test_result(passed, passed ? "Canvas clear · GPU readback verified" : "GPU pixel did not match #168249");
+      report(passed, passed ? "Canvas clear · GPU readback verified" : "GPU pixel did not match #168249");
     });
 }
 } // namespace
+
+extern "C" EMSCRIPTEN_KEEPALIVE auto cleanup_test()->void {
+  cleanup();
+}
 
 auto main()->int {
   instance = wgpu::CreateInstance();
@@ -79,6 +106,7 @@ auto main()->int {
   wgpu::RequestAdapterOptions options{.compatibleSurface{surface}};
   instance.RequestAdapter(&options, wgpu::CallbackMode::AllowSpontaneous,
     [](wgpu::RequestAdapterStatus status, wgpu::Adapter result, wgpu::StringView message) {
+      if(stopped) return;
       if(status != wgpu::RequestAdapterStatus::Success) {
         fail("WebGPU adapter unavailable", message);
         return;
@@ -94,7 +122,7 @@ auto main()->int {
         }
       }
       if(format == wgpu::TextureFormat::Undefined) {
-        test_result(false, "No supported 8-bit canvas format");
+        report(false, "No supported 8-bit canvas format");
         return;
       }
       wgpu::DeviceDescriptor device_descriptor;
@@ -102,9 +130,15 @@ auto main()->int {
         fail("WebGPU error", error);
       });
       device_descriptor.SetDeviceLostCallback(wgpu::CallbackMode::AllowSpontaneous,
-        [](wgpu::Device const &, wgpu::DeviceLostReason, wgpu::StringView error) { fail("WebGPU device lost", error); });
+        [](wgpu::Device const &, wgpu::DeviceLostReason reason, wgpu::StringView error) {
+          if(reason != wgpu::DeviceLostReason::Destroyed) fail("WebGPU device lost", error);
+        });
       adapter.RequestDevice(&device_descriptor, wgpu::CallbackMode::AllowSpontaneous,
         [](wgpu::RequestDeviceStatus device_status, wgpu::Device result_device, wgpu::StringView error) {
+          if(stopped) {
+            if(result_device) result_device.Destroy();
+            return;
+          }
           if(device_status != wgpu::RequestDeviceStatus::Success) {
             fail("WebGPU device creation failed", error);
             return;

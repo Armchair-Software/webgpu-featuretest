@@ -4,19 +4,34 @@
 #include <cstdint>
 #include <emscripten/webaudio.h>
 
+// The SDK's destroy helper only suspends the context; close it to release audio resources.
+EM_JS(void, close_audio_context, (int handle), {
+  const context = emscriptenGetAudioObject(handle);
+  emscriptenDestroyAudioContext(handle);
+  context.close().catch(error => console.error(error));
+});
+EM_JS_DEPS(close_audio_context, "$emscriptenGetAudioObject,$emscriptenDestroyAudioContext");
+
 namespace {
 alignas(16) std::uint8_t worklet_stack[4096]{};
 std::atomic<unsigned int> processed_blocks{};
 EMSCRIPTEN_WEBAUDIO_T context{};
 EMSCRIPTEN_WEBAUDIO_T node{};
 double deadline{};
+bool stopped{};
 
 auto cleanup()->void {
+  stopped = true;
   if(node) emscripten_destroy_web_audio_node(node);
-  if(context) emscripten_destroy_audio_context(context);
+  node = 0;
+  if(context) {
+    close_audio_context(context);
+  }
+  context = 0;
 }
 
 auto check_processing(void *)->void {
+  if(stopped) return;
   if(processed_blocks.load() > 0) {
     cleanup();
     test_result(true, "Worklet silent audio · 4 KiB stack");
@@ -48,6 +63,7 @@ auto process(int, AudioSampleFrame const *, int output_count, AudioSampleFrame *
 }
 
 auto processor_created(EMSCRIPTEN_WEBAUDIO_T, bool success, void *)->void {
+  if(stopped) return;
   if(!success) {
     cleanup();
     test_result(false, "Wasm audio processor registration failed");
@@ -71,6 +87,7 @@ auto processor_created(EMSCRIPTEN_WEBAUDIO_T, bool success, void *)->void {
 }
 
 auto thread_started(EMSCRIPTEN_WEBAUDIO_T, bool success, void *)->void {
+  if(stopped) return;
   if(!success) {
     cleanup();
     test_result(false, "Wasm audio worklet thread failed to start");
@@ -81,6 +98,10 @@ auto thread_started(EMSCRIPTEN_WEBAUDIO_T, bool success, void *)->void {
   emscripten_create_wasm_audio_worklet_processor_async(context, &options, processor_created, nullptr);
 }
 } // namespace
+
+extern "C" EMSCRIPTEN_KEEPALIVE auto cleanup_test()->void {
+  cleanup();
+}
 
 // Called synchronously from the retry button, while user activation is present.
 extern "C" EMSCRIPTEN_KEEPALIVE auto resume_audio_test()->void {
