@@ -1,11 +1,11 @@
 'use strict';
 const features = [
   ['basic', 'Basic WebAssembly execution', 'C++26 main · arithmetic · pointer width', 'wasm'],
-  ['storage', 'Browser storage', 'Temporary write / read / remove'],
-  ['clipboard', 'Clipboard', 'Copy / paste · user action required'],
-  ['fetch', 'Fetch & preloaded files', 'Separate download and packaged-file checks', 'fetch'],
+  ['storage', 'Browser storage', 'Temporary localStorage write / read / remove', 'storage'],
+  ['fetch', 'Fetch', 'C++ fetch → local fixture → verify bytes', 'fetch'],
+  ['filesystem', 'Preloaded files', 'Packaged fixture → C++ virtual filesystem', 'configuration'],
   ['websocket', 'WebSockets', 'Capability only · no server connection', 'websocket'],
-  ['dom', 'Embind & DOM', 'Basic execution → C++ / JavaScript round trip'],
+  ['dom', 'Embind & DOM', 'Basic execution → C++ / JavaScript round trip', 'dom'],
   ['bulk_memory', 'Bulk memory', 'Basic execution → memory copy / fill', 'bulk_memory'],
   ['memory_growth', 'Memory growth', 'Basic execution → grow and verify heap', 'memory_growth'],
   ['maximum_memory', 'Custom maximum memory', 'Configured cap · not a capacity stress test'],
@@ -13,12 +13,12 @@ const features = [
   ['exceptions_legacy', 'Wasm exceptions · legacy', 'Basic execution → throw / catch / unwind', 'exceptions_legacy'],
   ['exceptions', 'Wasm exceptions · standardized', 'Basic execution → try_table', 'exceptions'],
   ['simd', 'SIMD128', 'Basic execution → vector arithmetic', 'simd'],
-  ['relaxed_simd', 'Relaxed SIMD / FMA', 'SIMD128 → relaxed instructions'],
+  ['relaxed_simd', 'Relaxed SIMD / FMA', 'SIMD128 → relaxed instructions', 'relaxed_simd'],
   ['atomics', 'Shared memory & atomics', 'Isolation → shared memory → atomic operations', 'shared'],
   ['workers', 'Wasm Workers', 'Shared memory → worker dispatch · 1 MiB stack', 'worker'],
   ['synchronisation', 'Worker / worklet synchronization', 'Shared memory → locking and notification'],
   ['pthreads', 'Pthread creation', 'Optional diagnostic · separate from synchronization'],
-  ['audio', 'Wasm audio worklets', 'Workers → audio processor · 4 KiB stack · click to start', 'audio'],
+  ['audio', 'Wasm audio worklets', 'Workers → audio processor · report autoplay restrictions', 'audio'],
   ['webgpu', 'WebGPU / emdawnwebgpu', 'Basic execution → adapter → device → green canvas', 'gpu'],
   ['gpu_features', 'WebGPU feature extensions', 'Separate depth/stencil, BC, indirect and timestamp checks']
 ];
@@ -53,6 +53,13 @@ function detection(probe) {
       case 'simd':
         // v128.const zero, drop.
         return instruction_detection([0xfd, 0x0c, ...Array(16).fill(0), 0x1a]);
+      case 'relaxed_simd': {
+        // Three v128.const operands, f32x4.relaxed_madd (0x105), drop.
+        const zero = [0xfd, 0x0c, ...Array(16).fill(0)];
+        return instruction_detection([...zero, ...zero, ...zero, 0xfd, 0x85, 0x02, 0x1a]);
+      }
+      case 'storage': return typeof window.localStorage?.getItem === 'function' ? 'Storage API exposed' : 'Storage API unavailable';
+      case 'dom': return typeof document.createElement === 'function' ? 'DOM API exposed' : 'DOM API unavailable';
       case 'bulk_memory':
         // Three i32 arguments per operation; memory.copy then memory.fill.
         return instruction_detection([
@@ -71,7 +78,7 @@ function detection(probe) {
       case 'worker': return typeof Worker === 'function' ? 'Worker API exposed' : 'Worker API unavailable';
       case 'gpu': return navigator.gpu ? 'WebGPU API exposed · adapter not tested' : 'WebGPU API unavailable';
       case 'audio': return typeof AudioWorkletNode === 'function' ? 'AudioWorklet API exposed' : 'AudioWorklet API unavailable';
-      case 'fetch': return typeof fetch === 'function' ? 'Fetch API exposed' : 'Fetch API unavailable';
+      case 'fetch': return typeof XMLHttpRequest === 'function' ? 'XHR API exposed · used by Emscripten fetch' : 'XHR API unavailable';
       case 'websocket': return typeof WebSocket === 'function' ? 'WebSocket API exposed · connectivity untested' : 'WebSocket API unavailable';
       default: return 'Probe planned';
     }

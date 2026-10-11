@@ -1,0 +1,1 @@
+Browser feature test fixture.
