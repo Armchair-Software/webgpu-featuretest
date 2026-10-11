@@ -210,8 +210,24 @@ function finish(run, state, detail) {
     preview.style.color = 'white';
     preview.textContent = state === 'passed' ? '✓ Execution verified' : '× Execution failed';
     run.frame.replaceWith(preview);
+    run.preview = preview;
     run.frame = null;
   }
+  update_summary();
+  clearTimeout(next_timer);
+  next_timer = setTimeout(start_next, 50);
+}
+function retry_failed(run) {
+  if(run.state !== 'failed') return;
+  const preview = document.createElement('div');
+  preview.className = 'preview';
+  preview.textContent = 'Queued';
+  run.preview.replaceWith(preview);
+  run.preview = preview;
+  run.state = 'queued';
+  run.cell.dataset.state = 'queued';
+  run.result.classList.remove('failed');
+  run.result.textContent = 'Waiting for previous test…';
   update_summary();
   clearTimeout(next_timer);
   next_timer = setTimeout(start_next, 50);
@@ -296,6 +312,7 @@ function start() {
       result.textContent = 'Waiting for previous test…';
       cell.dataset.state = 'queued';
       const run = {target, title: `${title}, wasm${bits}`, preview, frame: null, result, cell, state: 'queued'};
+      cell.addEventListener('click', () => retry_failed(run));
       runs.set(target, run);
       cell.append(preview, result);
     }
