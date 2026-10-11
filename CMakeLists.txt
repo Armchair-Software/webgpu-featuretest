@@ -1637,6 +1637,7 @@ set(feature_tests
 )
 
 configure_file(assets/fixture.txt fixture.txt COPYONLY)
+configure_file(assets/social-preview.jpg social-preview.jpg COPYONLY)
 # One build-generated list is shared by the checklist, iframe runner and smoke test.
 list(JOIN feature_tests "','" feature_names)
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test-list.js" "window.feature_tests = ['${feature_names}'];\n")
