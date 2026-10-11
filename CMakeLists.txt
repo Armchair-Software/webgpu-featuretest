@@ -501,8 +501,7 @@ target_link_options(memory_growth_wasm64 PRIVATE
 # 2 GiB maximum memory; only 16 MiB is allocated at startup.
 
 add_executable(maximum_memory_2gb_wasm32
-  main_maximum_memory_2gb.cpp
-  memory_limit_test.cpp
+  main_maximum_memory.cpp
 )
 set_target_properties(maximum_memory_2gb_wasm32 PROPERTIES SUFFIX ".js")
 target_compile_definitions(maximum_memory_2gb_wasm32 PRIVATE TEST_POINTER_BITS=32)
@@ -521,8 +520,7 @@ target_link_options(maximum_memory_2gb_wasm32 PRIVATE
 )
 
 add_executable(maximum_memory_2gb_wasm64
-  main_maximum_memory_2gb.cpp
-  memory_limit_test.cpp
+  main_maximum_memory.cpp
 )
 set_target_properties(maximum_memory_2gb_wasm64 PROPERTIES SUFFIX ".js")
 target_compile_definitions(maximum_memory_2gb_wasm64 PRIVATE TEST_POINTER_BITS=64)
@@ -543,8 +541,7 @@ target_link_options(maximum_memory_2gb_wasm64 PRIVATE
 # 4 GiB maximum memory; only 16 MiB is allocated at startup.
 
 add_executable(maximum_memory_4gb_wasm32
-  main_maximum_memory_4gb.cpp
-  memory_limit_test.cpp
+  main_maximum_memory.cpp
 )
 set_target_properties(maximum_memory_4gb_wasm32 PROPERTIES SUFFIX ".js")
 target_compile_definitions(maximum_memory_4gb_wasm32 PRIVATE TEST_POINTER_BITS=32)
@@ -563,8 +560,7 @@ target_link_options(maximum_memory_4gb_wasm32 PRIVATE
 )
 
 add_executable(maximum_memory_4gb_wasm64
-  main_maximum_memory_4gb.cpp
-  memory_limit_test.cpp
+  main_maximum_memory.cpp
 )
 set_target_properties(maximum_memory_4gb_wasm64 PROPERTIES SUFFIX ".js")
 target_compile_definitions(maximum_memory_4gb_wasm64 PRIVATE TEST_POINTER_BITS=64)
@@ -586,8 +582,7 @@ target_link_options(maximum_memory_4gb_wasm64 PRIVATE
 
 # No wasm32 target: wasm-ld rejects maximum memory above 4 GiB.
 add_executable(maximum_memory_8gb_wasm64
-  main_maximum_memory_8gb.cpp
-  memory_limit_test.cpp
+  main_maximum_memory.cpp
 )
 set_target_properties(maximum_memory_8gb_wasm64 PROPERTIES SUFFIX ".js")
 target_compile_definitions(maximum_memory_8gb_wasm64 PRIVATE TEST_POINTER_BITS=64)

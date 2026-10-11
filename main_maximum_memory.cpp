@@ -1,9 +1,8 @@
-#include "memory_limit_test.h"
 #include <cstdio>
 #include <emscripten/heap.h>
 #include "test_result.h"
 
-auto run_memory_limit_test()->int {
+auto main()->int {
   // These are the Emscripten queries also used by memorystorm. Heap size is
   // linear memory currently allocated, not live malloc usage or physical RAM.
   auto const current{emscripten_get_heap_size()};
