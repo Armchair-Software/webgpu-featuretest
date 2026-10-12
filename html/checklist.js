@@ -42,7 +42,14 @@ const optional_features = [
   ['webgpu_etc2', 'WebGPU · texture-compression-etc2', 'Upload and sample an ETC2-compressed texture', 'gpu:texture-compression-etc2'],
   ['webgpu_astc', 'WebGPU · texture-compression-astc', 'Upload and sample an ASTC-compressed texture', 'gpu:texture-compression-astc'],
   ['webgpu_f16', 'WebGPU · shader-f16', 'Execute a shader using half-precision floats', 'gpu:shader-f16'],
-  ['webgpu_float32_filterable', 'WebGPU · float32-filterable', 'Filter a 32-bit float texture', 'gpu:float32-filterable']
+  ['webgpu_float32_filterable', 'WebGPU · float32-filterable', 'Filter a 32-bit float texture', 'gpu:float32-filterable'],
+  ['webgpu_bgra8unorm_storage', 'WebGPU · bgra8unorm-storage', 'Compute shader → BGRA texture → readback', 'gpu:bgra8unorm-storage'],
+  ['webgpu_rg11b10ufloat', 'WebGPU · rg11b10ufloat-renderable', 'Render into a packed float texture', 'gpu:rg11b10ufloat-renderable'],
+  ['webgpu_float32_blendable', 'WebGPU · float32-blendable', 'Blend colours into a 32-bit float texture', 'gpu:float32-blendable'],
+  ['webgpu_depth_clip_control', 'WebGPU · depth-clip-control', 'Compare clipped and unclipped geometry', 'gpu:depth-clip-control'],
+  ['webgpu_subgroups', 'WebGPU · subgroups', 'Collective shader arithmetic → readback', 'gpu:subgroups'],
+  ['webgpu_clip_distances', 'WebGPU · clip-distances', 'Shader clip plane → pixel readback', 'gpu:clip-distances'],
+  ['webgpu_dual_source_blending', 'WebGPU · dual-source-blending', 'Blend using two fragment shader outputs', 'gpu:dual-source-blending']
 ];
 const features = [...main_features, ...optional_features];
 const implemented = new Set(window.feature_tests || []);
