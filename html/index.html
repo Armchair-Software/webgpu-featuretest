@@ -38,11 +38,11 @@
         <div><span class="label">CROSS-ORIGIN ISOLATION</span><strong id="isolation">Checking…</strong></div>
         <div><span class="label">BUILD</span><strong id="build">Not built</strong></div>
       </section>
-      <p class="note">Programs run one at a time in both architectures. API detection alone is not a runtime pass.</p>
+      <p class="note">Programs run one at a time across all three modes. API detection alone is not a runtime pass.</p>
       <div class="table-scroll">
         <table>
-          <caption class="sr-only">Feature detection and independent wasm32 and wasm64 execution results</caption>
-          <thead><tr><th scope="col">FEATURE / DEPENDENCIES</th><th scope="col">JAVASCRIPT CHECK</th><th scope="col">WASM32 <span>32-bit pointers</span></th><th scope="col">WASM64 <span>64-bit pointers</span></th></tr></thead>
+          <caption class="sr-only">Feature detection and independent wasm32, lowered wasm64 and native wasm64 execution results</caption>
+          <thead><tr><th scope="col">FEATURE / DEPENDENCIES</th><th scope="col">JAVASCRIPT CHECK</th><th scope="col">WASM32 <span>32-bit pointers · 32-bit memory</span></th><th scope="col">WASM64 → WASM32 <span>64-bit pointers · 32-bit memory</span></th><th scope="col">WASM64 <span>64-bit pointers · 64-bit memory</span></th></tr></thead>
           <tbody id="tests"></tbody>
         </table>
       </div>
@@ -51,7 +51,7 @@
         <div class="table-scroll">
           <table>
             <caption class="sr-only">Optional WebGPU feature tests</caption>
-            <thead><tr><th scope="col">FEATURE / DEPENDENCIES</th><th scope="col">JAVASCRIPT CHECK</th><th scope="col">WASM32 <span>32-bit pointers</span></th><th scope="col">WASM64 <span>64-bit pointers</span></th></tr></thead>
+            <thead><tr><th scope="col">FEATURE / DEPENDENCIES</th><th scope="col">JAVASCRIPT CHECK</th><th scope="col">WASM32 <span>32-bit pointers · 32-bit memory</span></th><th scope="col">WASM64 → WASM32 <span>64-bit pointers · 32-bit memory</span></th><th scope="col">WASM64 <span>64-bit pointers · 64-bit memory</span></th></tr></thead>
             <tbody id="optional-tests"></tbody>
           </table>
         </div>

@@ -1,7 +1,7 @@
 'use strict';
 const main_features = [
   ['canvas', 'Canvas 2D', 'Create context → fill → pixel readback', 'canvas'],
-  ['basic', 'Basic WebAssembly execution', 'C++26 main · arithmetic · pointer width', 'wasm'],
+  ['basic', 'Basic WebAssembly execution', 'C++26 · pointer width · heap · i64/BigInt', 'wasm'],
   ['storage', 'Browser storage', 'Temporary localStorage write / read / remove', 'storage'],
   ['fetch', 'Fetch', 'C++ fetch → local fixture → verify bytes', 'fetch'],
   ['filesystem', 'Preloaded files', 'Packaged fixture → C++ virtual filesystem', 'configuration'],
@@ -52,8 +52,12 @@ const optional_features = [
   ['webgpu_dual_source_blending', 'WebGPU · dual-source-blending', 'Blend using two fragment shader outputs', 'gpu:dual-source-blending']
 ];
 const features = [...main_features, ...optional_features];
+const modes = window.test_modes;
 const implemented = new Set(window.feature_tests || []);
-const unavailable = {maximum_memory_8gb_wasm32: 'Wasm32 address space is limited to 4 GiB'};
+const unavailable = {
+  maximum_memory_8gb_wasm32: 'Wasm32 address space is limited to 4 GiB',
+  maximum_memory_8gb_wasm64_lowered: 'Lowered addressing is limited to 4 GiB'
+};
 const runs = new Map();
 let next_timer;
 const tbody = document.getElementById('tests');
@@ -84,23 +88,38 @@ function instruction_detection(instructions, memory = false) {
 function memory_limit_detection(gib) {
   const pages = gib * 1024 * 1024 * 1024 / 65536;
   return [32, 64].map(bits => {
-    if(bits === 32 && gib > 4) return 'wasm32: not applicable';
+    if(bits === 32 && gib > 4) return 'memory32: not applicable';
     try {
       const descriptor = bits === 64
         ? {address: 'i64', initial: BigInt(1), maximum: BigInt(pages)}
         : {address: 'i32', initial: 1, maximum: pages};
       const memory = new WebAssembly.Memory(descriptor);
       // Only one page is allocated. Acceptance does not promise growth to the cap.
-      return `wasm${bits}: ${memory.buffer.byteLength === 65536 ? 'accepted' : 'unexpected size'}`;
+      return `memory${bits}: ${memory.buffer.byteLength === 65536 ? 'accepted' : 'unexpected size'}`;
     } catch(error) {
-      return `wasm${bits}: rejected (${error.name})`;
+      return `memory${bits}: rejected (${error.name})`;
     }
   }).join(' · ');
 }
 function detection(probe) {
   try {
     switch(probe) {
-      case 'wasm': return typeof WebAssembly === 'object' && WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,0,0])) ? 'Wasm available · architecture verified alongside' : 'WebAssembly unavailable';
+      case 'wasm': {
+        if(typeof WebAssembly !== 'object' || typeof BigInt !== 'function' || typeof BigInt64Array !== 'function') {
+          return 'Wasm / BigInt APIs unavailable';
+        }
+        // Wasm32 memory and an i64 return value: no native memory64 requirement.
+        const module = new WebAssembly.Module(new Uint8Array([
+          0, 97, 115, 109, 1, 0, 0, 0,
+          1, 5, 1, 0x60, 0, 1, 0x7e, // () -> i64
+          3, 2, 1, 0,                 // Function using type 0.
+          5, 3, 1, 0, 1,             // One page of wasm32 memory.
+          7, 5, 1, 1, 0x66, 0, 0,    // Export function 0 as "f".
+          10, 6, 1, 4, 0, 0x42, 42, 0x0b // i64.const 42
+        ]));
+        return new WebAssembly.Instance(module).exports.f() === BigInt(42)
+          ? 'Wasm + i64/BigInt interop verified' : 'Wasm i64/BigInt interop failed';
+      }
       case 'exceptions_legacy':
         // try (void), nop, catch_all, nop, end.
         return instruction_detection([0x06, 0x40, 0x01, 0x19, 0x01, 0x0b]);
@@ -290,9 +309,10 @@ function start() {
     } else {
       check.textContent = detection(probe);
     }
-    for(const bits of [32, 64]) {
+    for(const mode of modes) {
       const cell = row.insertCell();
-      const target = `${id}_wasm${bits}`;
+      cell.dataset.mode = mode.label;
+      const target = `${id}_${mode.id}`;
       if(unavailable[target]) {
         cell.dataset.state = 'unavailable';
         const label = document.createElement('div');
@@ -318,7 +338,7 @@ function start() {
       result.className = 'result';
       result.textContent = 'Waiting for previous test…';
       cell.dataset.state = 'queued';
-      const run = {target, title: `${title}, wasm${bits}`, preview, frame: null, result, cell, state: 'queued'};
+      const run = {target, title: `${title}, ${mode.label}`, preview, frame: null, result, cell, state: 'queued'};
       cell.addEventListener('click', () => retry_failed(run));
       runs.set(target, run);
       cell.append(preview, result);
@@ -337,12 +357,12 @@ function create_report() {
     cross_origin_isolated: crossOriginIsolated,
     tests: Object.fromEntries(features.flatMap(([id, name]) => {
       const check = document.querySelector(`tr[data-feature="${id}"] .detection`).textContent;
-      return [32, 64].map(bits => {
-        const target = `${id}_wasm${bits}`;
+      return modes.map(mode => {
+        const target = `${id}_${mode.id}`;
         const run = runs.get(target);
         const state = run?.state || (unavailable[target] ? 'unavailable' : 'planned');
         const detail = run?.result.textContent || unavailable[target] || 'Not implemented';
-        return [`${name} (wasm${bits})`, `${state}: ${detail}, JS: ${check}`];
+        return [`${name} (${mode.label})`, `${state}: ${detail}, JS: ${check}`];
       });
     }))
   };

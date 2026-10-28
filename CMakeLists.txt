@@ -18,6 +18,7 @@ if(NOT build_type STREQUAL "debug" AND NOT build_type STREQUAL "release")
 endif()
 
 # Only diagnostics are shared. Feature and architecture flags are explicit below.
+# *_wasm64_lowered keeps the wasm64 C++ ABI; MEMORY64=2 lowers memory/table addressing.
 set(warning_options
   -Wall
   -Wextra
@@ -38,6 +39,25 @@ target_compile_options(basic_wasm32 PRIVATE
 )
 target_link_options(basic_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+)
+
+add_executable(basic_wasm64_lowered
+  main_basic.cpp
+)
+set_target_properties(basic_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(basic_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(basic_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+)
+target_link_options(basic_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -fno-exceptions
   -sALLOW_MEMORY_GROWTH=0
@@ -74,6 +94,25 @@ target_compile_options(storage_wasm32 PRIVATE
 )
 target_link_options(storage_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+)
+
+add_executable(storage_wasm64_lowered
+  main_storage.cpp
+)
+set_target_properties(storage_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(storage_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(storage_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+)
+target_link_options(storage_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -fno-exceptions
   -sALLOW_MEMORY_GROWTH=0
@@ -118,6 +157,28 @@ target_link_libraries(dom_wasm32
   PRIVATE embind
 )
 
+add_executable(dom_wasm64_lowered
+  main_dom.cpp
+)
+set_target_properties(dom_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(dom_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(dom_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+)
+target_link_options(dom_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+)
+target_link_libraries(dom_wasm64_lowered
+  PRIVATE embind
+)
+
 add_executable(dom_wasm64
   main_dom.cpp
 )
@@ -152,6 +213,27 @@ target_compile_options(fetch_wasm32 PRIVATE
 )
 target_link_options(fetch_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sFETCH=1
+  -sFETCH_SUPPORT_INDEXEDDB=0
+  -sALLOW_MEMORY_GROWTH=0
+)
+
+add_executable(fetch_wasm64_lowered
+  main_fetch.cpp
+)
+set_target_properties(fetch_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(fetch_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(fetch_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+)
+target_link_options(fetch_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -fno-exceptions
   -sFETCH=1
@@ -199,6 +281,27 @@ target_link_options(filesystem_wasm32 PRIVATE
 )
 set_property(TARGET filesystem_wasm32 APPEND PROPERTY LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/assets/fixture.txt")
 
+add_executable(filesystem_wasm64_lowered
+  main_filesystem.cpp
+)
+set_target_properties(filesystem_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(filesystem_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(filesystem_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+)
+target_link_options(filesystem_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fno-exceptions
+  "--preload-file=${CMAKE_CURRENT_SOURCE_DIR}/assets/fixture.txt@/fixture.txt"
+  -sALLOW_MEMORY_GROWTH=0
+)
+set_property(TARGET filesystem_wasm64_lowered APPEND PROPERTY LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/assets/fixture.txt")
+
 add_executable(filesystem_wasm64
   main_filesystem.cpp
 )
@@ -240,6 +343,28 @@ target_link_libraries(websocket_wasm32
   PRIVATE websocket.js
 )
 
+add_executable(websocket_wasm64_lowered
+  main_websocket.cpp
+)
+set_target_properties(websocket_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(websocket_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(websocket_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+)
+target_link_options(websocket_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+)
+target_link_libraries(websocket_wasm64_lowered
+  PRIVATE websocket.js
+)
+
 add_executable(websocket_wasm64
   main_websocket.cpp
 )
@@ -275,6 +400,27 @@ target_compile_options(exceptions_legacy_wasm32 PRIVATE
 )
 target_link_options(exceptions_legacy_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -fwasm-exceptions
+  -sWASM_LEGACY_EXCEPTIONS=1
+  -sALLOW_MEMORY_GROWTH=0
+)
+
+add_executable(exceptions_legacy_wasm64_lowered
+  main_exceptions_legacy.cpp
+)
+set_target_properties(exceptions_legacy_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(exceptions_legacy_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(exceptions_legacy_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fwasm-exceptions
+  -sWASM_LEGACY_EXCEPTIONS=1
+)
+target_link_options(exceptions_legacy_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -fwasm-exceptions
   -sWASM_LEGACY_EXCEPTIONS=1
@@ -321,6 +467,27 @@ target_link_options(exceptions_wasm32 PRIVATE
   -sALLOW_MEMORY_GROWTH=0
 )
 
+add_executable(exceptions_wasm64_lowered
+  main_exceptions.cpp
+)
+set_target_properties(exceptions_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(exceptions_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(exceptions_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fwasm-exceptions
+  -sWASM_LEGACY_EXCEPTIONS=0
+)
+target_link_options(exceptions_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fwasm-exceptions
+  -sWASM_LEGACY_EXCEPTIONS=0
+  -sALLOW_MEMORY_GROWTH=0
+)
+
 add_executable(exceptions_wasm64
   main_exceptions.cpp
 )
@@ -360,6 +527,26 @@ target_link_options(simd_wasm32 PRIVATE
   -sALLOW_MEMORY_GROWTH=0
 )
 
+add_executable(simd_wasm64_lowered
+  main_simd.cpp
+)
+set_target_properties(simd_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(simd_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(simd_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  -msimd128
+)
+target_link_options(simd_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+)
+
 add_executable(simd_wasm64
   main_simd.cpp
 )
@@ -393,6 +580,26 @@ target_compile_options(relaxed_simd_wasm32 PRIVATE
 )
 target_link_options(relaxed_simd_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+)
+
+add_executable(relaxed_simd_wasm64_lowered
+  main_relaxed_simd.cpp
+)
+set_target_properties(relaxed_simd_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(relaxed_simd_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(relaxed_simd_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  -mrelaxed-simd
+)
+target_link_options(relaxed_simd_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -fno-exceptions
   -sALLOW_MEMORY_GROWTH=0
@@ -437,6 +644,27 @@ target_link_options(bulk_memory_wasm32 PRIVATE
   -sALLOW_MEMORY_GROWTH=0
 )
 
+add_executable(bulk_memory_wasm64_lowered
+  main_bulk_memory.cpp
+)
+set_target_properties(bulk_memory_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(bulk_memory_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(bulk_memory_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  -mbulk-memory
+  -mbulk-memory-opt
+)
+target_link_options(bulk_memory_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+)
+
 add_executable(bulk_memory_wasm64
   main_bulk_memory.cpp
 )
@@ -470,6 +698,28 @@ target_compile_options(memory_growth_wasm32 PRIVATE
 )
 target_link_options(memory_growth_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=1
+  -sINITIAL_MEMORY=16mb
+  -sMAXIMUM_MEMORY=64mb
+  -sABORTING_MALLOC=0
+)
+
+add_executable(memory_growth_wasm64_lowered
+  main_memory_growth.cpp
+)
+set_target_properties(memory_growth_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(memory_growth_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(memory_growth_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+)
+target_link_options(memory_growth_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -fno-exceptions
   -sALLOW_MEMORY_GROWTH=1
@@ -519,6 +769,27 @@ target_link_options(maximum_memory_2gb_wasm32 PRIVATE
   -sMAXIMUM_MEMORY=2GB
 )
 
+add_executable(maximum_memory_2gb_wasm64_lowered
+  main_maximum_memory.cpp
+)
+set_target_properties(maximum_memory_2gb_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(maximum_memory_2gb_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(maximum_memory_2gb_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+)
+target_link_options(maximum_memory_2gb_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=1
+  -sINITIAL_MEMORY=16mb
+  -sMAXIMUM_MEMORY=2GB
+)
+
 add_executable(maximum_memory_2gb_wasm64
   main_maximum_memory.cpp
 )
@@ -552,6 +823,27 @@ target_compile_options(maximum_memory_4gb_wasm32 PRIVATE
 )
 target_link_options(maximum_memory_4gb_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=1
+  -sINITIAL_MEMORY=16mb
+  -sMAXIMUM_MEMORY=4GB
+)
+
+add_executable(maximum_memory_4gb_wasm64_lowered
+  main_maximum_memory.cpp
+)
+set_target_properties(maximum_memory_4gb_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(maximum_memory_4gb_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(maximum_memory_4gb_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+)
+target_link_options(maximum_memory_4gb_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -fno-exceptions
   -sALLOW_MEMORY_GROWTH=1
@@ -620,6 +912,26 @@ target_link_options(stack_wasm32 PRIVATE
   -sALLOW_MEMORY_GROWTH=0
 )
 
+add_executable(stack_wasm64_lowered
+  main_stack.cpp
+)
+set_target_properties(stack_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(stack_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(stack_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+)
+target_link_options(stack_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sSTACK_SIZE=5mb
+  -sALLOW_MEMORY_GROWTH=0
+)
+
 add_executable(stack_wasm64
   main_stack.cpp
 )
@@ -653,6 +965,27 @@ target_compile_options(atomics_wasm32 PRIVATE
 )
 target_link_options(atomics_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -sSHARED_MEMORY=1
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+)
+
+add_executable(atomics_wasm64_lowered
+  main_atomics.cpp
+)
+set_target_properties(atomics_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(atomics_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(atomics_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -sSHARED_MEMORY=1
+  -fno-exceptions
+)
+target_link_options(atomics_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -sSHARED_MEMORY=1
   -fno-exceptions
@@ -699,6 +1032,27 @@ target_link_options(workers_wasm32 PRIVATE
   -sALLOW_MEMORY_GROWTH=0
 )
 
+add_executable(workers_wasm64_lowered
+  main_workers.cpp
+)
+set_target_properties(workers_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(workers_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(workers_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -sWASM_WORKERS=1
+  -fno-exceptions
+)
+target_link_options(workers_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web,worker
+  -sWASM_WORKERS=1
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+)
+
 add_executable(workers_wasm64
   main_workers.cpp
 )
@@ -734,6 +1088,29 @@ target_compile_options(synchronisation_wasm32 PRIVATE
 )
 target_link_options(synchronisation_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web,worker
+  -sWASM_WORKERS=1
+  -pthread
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+)
+
+add_executable(synchronisation_wasm64_lowered
+  main_synchronisation.cpp
+)
+set_target_properties(synchronisation_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(synchronisation_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(synchronisation_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -sWASM_WORKERS=1
+  -pthread
+  -fno-exceptions
+)
+target_link_options(synchronisation_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web,worker
   -sWASM_WORKERS=1
   -pthread
@@ -784,6 +1161,28 @@ target_link_options(pthreads_wasm32 PRIVATE
   -sALLOW_MEMORY_GROWTH=0
 )
 
+add_executable(pthreads_wasm64_lowered
+  main_pthreads.cpp
+)
+set_target_properties(pthreads_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(pthreads_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(pthreads_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -pthread
+  -fno-exceptions
+)
+target_link_options(pthreads_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web,worker
+  -pthread
+  -sEXIT_RUNTIME=1
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+)
+
 add_executable(pthreads_wasm64
   main_pthreads.cpp
 )
@@ -823,6 +1222,25 @@ target_link_options(canvas_wasm32 PRIVATE
   -sALLOW_MEMORY_GROWTH=0
 )
 
+add_executable(canvas_wasm64_lowered
+  main_canvas.cpp
+)
+set_target_properties(canvas_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(canvas_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(canvas_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+)
+target_link_options(canvas_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+)
+
 add_executable(canvas_wasm64
   main_canvas.cpp
 )
@@ -855,6 +1273,28 @@ target_compile_options(webgl_wasm32 PRIVATE
 )
 target_link_options(webgl_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sMIN_WEBGL_VERSION=1
+  -sMAX_WEBGL_VERSION=1
+  -sALLOW_MEMORY_GROWTH=0
+)
+
+add_executable(webgl_wasm64_lowered
+  main_webgl.cpp
+  webgl_test.cpp
+)
+set_target_properties(webgl_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgl_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgl_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+)
+target_link_options(webgl_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -fno-exceptions
   -sMIN_WEBGL_VERSION=1
@@ -904,6 +1344,28 @@ target_link_options(webgl2_wasm32 PRIVATE
   -sALLOW_MEMORY_GROWTH=0
 )
 
+add_executable(webgl2_wasm64_lowered
+  main_webgl2.cpp
+  webgl_test.cpp
+)
+set_target_properties(webgl2_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgl2_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgl2_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+)
+target_link_options(webgl2_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sMIN_WEBGL_VERSION=2
+  -sMAX_WEBGL_VERSION=2
+  -sALLOW_MEMORY_GROWTH=0
+)
+
 add_executable(webgl2_wasm64
   main_webgl2.cpp
   webgl_test.cpp
@@ -939,6 +1401,23 @@ target_link_options(audio_buffer_wasm32 PRIVATE
   -sALLOW_MEMORY_GROWTH=0
 )
 
+add_executable(audio_buffer_wasm64_lowered main_audio_buffer.cpp)
+set_target_properties(audio_buffer_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(audio_buffer_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(audio_buffer_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+)
+target_link_options(audio_buffer_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+)
+
 add_executable(audio_buffer_wasm64 main_audio_buffer.cpp)
 set_target_properties(audio_buffer_wasm64 PROPERTIES SUFFIX ".js")
 target_compile_definitions(audio_buffer_wasm64 PRIVATE TEST_POINTER_BITS=64)
@@ -966,6 +1445,28 @@ target_compile_options(audio_wasm32 PRIVATE
 )
 target_link_options(audio_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web,worker
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  -pthread
+  -sWASM_WORKERS=1
+  -sAUDIO_WORKLET=1
+)
+
+add_executable(audio_wasm64_lowered main_audio.cpp)
+set_target_properties(audio_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(audio_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(audio_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  -pthread
+  -sWASM_WORKERS=1
+)
+target_link_options(audio_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web,worker
   -fno-exceptions
   -sALLOW_MEMORY_GROWTH=0
@@ -1011,6 +1512,25 @@ target_link_options(webgpu_wasm32 PRIVATE
   --use-port=emdawnwebgpu
 )
 
+add_executable(webgpu_wasm64_lowered main_webgpu.cpp)
+set_target_properties(webgpu_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
 add_executable(webgpu_wasm64 main_webgpu.cpp)
 set_target_properties(webgpu_wasm64 PROPERTIES SUFFIX ".js")
 target_compile_definitions(webgpu_wasm64 PRIVATE TEST_POINTER_BITS=64)
@@ -1039,6 +1559,25 @@ target_compile_options(webgpu_depth_stencil_wasm32 PRIVATE
 )
 target_link_options(webgpu_depth_stencil_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_depth_stencil_wasm64_lowered main_webgpu_depth_stencil.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_depth_stencil_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_depth_stencil_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_depth_stencil_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_depth_stencil_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -fno-exceptions
   -sALLOW_MEMORY_GROWTH=0
@@ -1079,6 +1618,25 @@ target_link_options(webgpu_bc_wasm32 PRIVATE
   --use-port=emdawnwebgpu
 )
 
+add_executable(webgpu_bc_wasm64_lowered main_webgpu_bc.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_bc_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_bc_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_bc_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_bc_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
 add_executable(webgpu_bc_wasm64 main_webgpu_bc.cpp webgpu_feature_test.cpp)
 set_target_properties(webgpu_bc_wasm64 PROPERTIES SUFFIX ".js")
 target_compile_definitions(webgpu_bc_wasm64 PRIVATE TEST_POINTER_BITS=64)
@@ -1107,6 +1665,25 @@ target_compile_options(webgpu_indirect_wasm32 PRIVATE
 )
 target_link_options(webgpu_indirect_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_indirect_wasm64_lowered main_webgpu_indirect.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_indirect_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_indirect_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_indirect_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_indirect_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -fno-exceptions
   -sALLOW_MEMORY_GROWTH=0
@@ -1147,6 +1724,25 @@ target_link_options(webgpu_timestamp_wasm32 PRIVATE
   --use-port=emdawnwebgpu
 )
 
+add_executable(webgpu_timestamp_wasm64_lowered main_webgpu_timestamp.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_timestamp_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_timestamp_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_timestamp_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_timestamp_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
 add_executable(webgpu_timestamp_wasm64 main_webgpu_timestamp.cpp webgpu_feature_test.cpp)
 set_target_properties(webgpu_timestamp_wasm64 PROPERTIES SUFFIX ".js")
 target_compile_definitions(webgpu_timestamp_wasm64 PRIVATE TEST_POINTER_BITS=64)
@@ -1175,6 +1771,25 @@ target_compile_options(webgpu_f16_wasm32 PRIVATE
 )
 target_link_options(webgpu_f16_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_f16_wasm64_lowered main_webgpu_f16.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_f16_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_f16_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_f16_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_f16_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -fno-exceptions
   -sALLOW_MEMORY_GROWTH=0
@@ -1215,6 +1830,25 @@ target_link_options(webgpu_float32_filterable_wasm32 PRIVATE
   --use-port=emdawnwebgpu
 )
 
+add_executable(webgpu_float32_filterable_wasm64_lowered main_webgpu_float32_filterable.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_float32_filterable_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_float32_filterable_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_float32_filterable_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_float32_filterable_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
 add_executable(webgpu_float32_filterable_wasm64 main_webgpu_float32_filterable.cpp webgpu_feature_test.cpp)
 set_target_properties(webgpu_float32_filterable_wasm64 PROPERTIES SUFFIX ".js")
 target_compile_definitions(webgpu_float32_filterable_wasm64 PRIVATE TEST_POINTER_BITS=64)
@@ -1243,6 +1877,25 @@ target_compile_options(webgpu_compute_wasm32 PRIVATE
 )
 target_link_options(webgpu_compute_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_compute_wasm64_lowered main_webgpu_compute.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_compute_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_compute_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_compute_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_compute_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -fno-exceptions
   -sALLOW_MEMORY_GROWTH=0
@@ -1283,6 +1936,25 @@ target_link_options(webgpu_render_wasm32 PRIVATE
   --use-port=emdawnwebgpu
 )
 
+add_executable(webgpu_render_wasm64_lowered main_webgpu_render.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_render_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_render_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_render_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_render_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
 add_executable(webgpu_render_wasm64 main_webgpu_render.cpp webgpu_feature_test.cpp)
 set_target_properties(webgpu_render_wasm64 PROPERTIES SUFFIX ".js")
 target_compile_definitions(webgpu_render_wasm64 PRIVATE TEST_POINTER_BITS=64)
@@ -1314,6 +1986,29 @@ target_compile_options(webgpu_worker_wasm32 PRIVATE
 target_link_options(webgpu_worker_wasm32 PRIVATE
   -pthread # emdawnwebgpu uses mutexes; this test creates a Wasm Worker.
   -m32
+  -sENVIRONMENT=web,worker
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  -sWASM_WORKERS=1
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_worker_wasm64_lowered main_webgpu_worker.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_worker_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_worker_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_worker_wasm64_lowered PRIVATE
+  -pthread # emdawnwebgpu uses mutexes; this test creates a Wasm Worker.
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  -sWASM_WORKERS=1
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_worker_wasm64_lowered PRIVATE
+  -pthread # emdawnwebgpu uses mutexes; this test creates a Wasm Worker.
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web,worker
   -fno-exceptions
   -sALLOW_MEMORY_GROWTH=0
@@ -1359,6 +2054,25 @@ target_link_options(webgpu_etc2_wasm32 PRIVATE
   --use-port=emdawnwebgpu
 )
 
+add_executable(webgpu_etc2_wasm64_lowered main_webgpu_etc2.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_etc2_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_etc2_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_etc2_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_etc2_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
 add_executable(webgpu_etc2_wasm64 main_webgpu_etc2.cpp webgpu_feature_test.cpp)
 set_target_properties(webgpu_etc2_wasm64 PROPERTIES SUFFIX ".js")
 target_compile_definitions(webgpu_etc2_wasm64 PRIVATE TEST_POINTER_BITS=64)
@@ -1387,6 +2101,25 @@ target_compile_options(webgpu_astc_wasm32 PRIVATE
 )
 target_link_options(webgpu_astc_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -fno-exceptions
+  -sALLOW_MEMORY_GROWTH=0
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_astc_wasm64_lowered main_webgpu_astc.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_astc_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_astc_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_astc_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_astc_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -fno-exceptions
   -sALLOW_MEMORY_GROWTH=0
@@ -1427,6 +2160,25 @@ target_link_options(exceptions_js_wasm32 PRIVATE
   -sDISABLE_EXCEPTION_CATCHING=0
 )
 
+add_executable(exceptions_js_wasm64_lowered main_exceptions_js.cpp)
+set_target_properties(exceptions_js_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(exceptions_js_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(exceptions_js_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fexceptions
+  -sDISABLE_EXCEPTION_CATCHING=0
+)
+target_link_options(exceptions_js_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fexceptions
+  -sDISABLE_EXCEPTION_CATCHING=0
+)
+
 add_executable(exceptions_js_wasm64 main_exceptions_js.cpp)
 set_target_properties(exceptions_js_wasm64 PROPERTIES SUFFIX ".js")
 target_compile_definitions(exceptions_js_wasm64 PRIVATE TEST_POINTER_BITS=64)
@@ -1455,6 +2207,25 @@ target_compile_options(webgpu_indexed_wasm32 PRIVATE
 )
 target_link_options(webgpu_indexed_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_indexed_wasm64_lowered main_webgpu_indexed.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_indexed_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_indexed_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_indexed_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_indexed_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -sALLOW_MEMORY_GROWTH=0
   -fno-exceptions
@@ -1495,6 +2266,25 @@ target_link_options(webgpu_uniform_wasm32 PRIVATE
   --use-port=emdawnwebgpu
 )
 
+add_executable(webgpu_uniform_wasm64_lowered main_webgpu_uniform.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_uniform_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_uniform_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_uniform_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_uniform_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+
 add_executable(webgpu_uniform_wasm64 main_webgpu_uniform.cpp webgpu_feature_test.cpp)
 set_target_properties(webgpu_uniform_wasm64 PROPERTIES SUFFIX ".js")
 target_compile_definitions(webgpu_uniform_wasm64 PRIVATE TEST_POINTER_BITS=64)
@@ -1523,6 +2313,25 @@ target_compile_options(webgpu_bundles_wasm32 PRIVATE
 )
 target_link_options(webgpu_bundles_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_bundles_wasm64_lowered main_webgpu_bundles.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_bundles_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_bundles_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_bundles_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_bundles_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -sALLOW_MEMORY_GROWTH=0
   -fno-exceptions
@@ -1563,6 +2372,25 @@ target_link_options(webgpu_bgra8unorm_storage_wasm32 PRIVATE
   --use-port=emdawnwebgpu
 )
 
+add_executable(webgpu_bgra8unorm_storage_wasm64_lowered main_webgpu_bgra8unorm_storage.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_bgra8unorm_storage_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_bgra8unorm_storage_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_bgra8unorm_storage_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_bgra8unorm_storage_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+
 add_executable(webgpu_bgra8unorm_storage_wasm64 main_webgpu_bgra8unorm_storage.cpp webgpu_feature_test.cpp)
 set_target_properties(webgpu_bgra8unorm_storage_wasm64 PROPERTIES SUFFIX ".js")
 target_compile_definitions(webgpu_bgra8unorm_storage_wasm64 PRIVATE TEST_POINTER_BITS=64)
@@ -1591,6 +2419,25 @@ target_compile_options(webgpu_rg11b10ufloat_wasm32 PRIVATE
 )
 target_link_options(webgpu_rg11b10ufloat_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_rg11b10ufloat_wasm64_lowered main_webgpu_rg11b10ufloat.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_rg11b10ufloat_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_rg11b10ufloat_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_rg11b10ufloat_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_rg11b10ufloat_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -sALLOW_MEMORY_GROWTH=0
   -fno-exceptions
@@ -1631,6 +2478,25 @@ target_link_options(webgpu_float32_blendable_wasm32 PRIVATE
   --use-port=emdawnwebgpu
 )
 
+add_executable(webgpu_float32_blendable_wasm64_lowered main_webgpu_float32_blendable.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_float32_blendable_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_float32_blendable_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_float32_blendable_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_float32_blendable_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+
 add_executable(webgpu_float32_blendable_wasm64 main_webgpu_float32_blendable.cpp webgpu_feature_test.cpp)
 set_target_properties(webgpu_float32_blendable_wasm64 PROPERTIES SUFFIX ".js")
 target_compile_definitions(webgpu_float32_blendable_wasm64 PRIVATE TEST_POINTER_BITS=64)
@@ -1659,6 +2525,25 @@ target_compile_options(webgpu_depth_clip_control_wasm32 PRIVATE
 )
 target_link_options(webgpu_depth_clip_control_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_depth_clip_control_wasm64_lowered main_webgpu_depth_clip_control.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_depth_clip_control_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_depth_clip_control_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_depth_clip_control_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_depth_clip_control_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -sALLOW_MEMORY_GROWTH=0
   -fno-exceptions
@@ -1699,6 +2584,25 @@ target_link_options(webgpu_subgroups_wasm32 PRIVATE
   --use-port=emdawnwebgpu
 )
 
+add_executable(webgpu_subgroups_wasm64_lowered main_webgpu_subgroups.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_subgroups_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_subgroups_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_subgroups_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_subgroups_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+
 add_executable(webgpu_subgroups_wasm64 main_webgpu_subgroups.cpp webgpu_feature_test.cpp)
 set_target_properties(webgpu_subgroups_wasm64 PROPERTIES SUFFIX ".js")
 target_compile_definitions(webgpu_subgroups_wasm64 PRIVATE TEST_POINTER_BITS=64)
@@ -1727,6 +2631,25 @@ target_compile_options(webgpu_clip_distances_wasm32 PRIVATE
 )
 target_link_options(webgpu_clip_distances_wasm32 PRIVATE
   -m32
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+
+add_executable(webgpu_clip_distances_wasm64_lowered main_webgpu_clip_distances.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_clip_distances_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_clip_distances_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_clip_distances_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_clip_distances_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
   -sENVIRONMENT=web
   -sALLOW_MEMORY_GROWTH=0
   -fno-exceptions
@@ -1767,6 +2690,25 @@ target_link_options(webgpu_dual_source_blending_wasm32 PRIVATE
   --use-port=emdawnwebgpu
 )
 
+add_executable(webgpu_dual_source_blending_wasm64_lowered main_webgpu_dual_source_blending.cpp webgpu_feature_test.cpp)
+set_target_properties(webgpu_dual_source_blending_wasm64_lowered PROPERTIES SUFFIX ".js")
+target_compile_definitions(webgpu_dual_source_blending_wasm64_lowered PRIVATE TEST_POINTER_BITS=64)
+target_compile_options(webgpu_dual_source_blending_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  ${warning_options}
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+target_link_options(webgpu_dual_source_blending_wasm64_lowered PRIVATE
+  -m64
+  -sMEMORY64=2
+  -sENVIRONMENT=web
+  -sALLOW_MEMORY_GROWTH=0
+  -fno-exceptions
+  --use-port=emdawnwebgpu
+)
+
 add_executable(webgpu_dual_source_blending_wasm64 main_webgpu_dual_source_blending.cpp webgpu_feature_test.cpp)
 set_target_properties(webgpu_dual_source_blending_wasm64 PROPERTIES SUFFIX ".js")
 target_compile_definitions(webgpu_dual_source_blending_wasm64 PRIVATE TEST_POINTER_BITS=64)
@@ -1786,54 +2728,54 @@ target_link_options(webgpu_dual_source_blending_wasm64 PRIVATE
 
 # Build the complete suite with ./build.sh or the client target.
 add_custom_target(client ALL DEPENDS
-  basic_wasm32 basic_wasm64
-  storage_wasm32 storage_wasm64
-  dom_wasm32 dom_wasm64
-  fetch_wasm32 fetch_wasm64
-  filesystem_wasm32 filesystem_wasm64
-  websocket_wasm32 websocket_wasm64
-  exceptions_legacy_wasm32 exceptions_legacy_wasm64
-  exceptions_wasm32 exceptions_wasm64
-  exceptions_js_wasm32 exceptions_js_wasm64
-  simd_wasm32 simd_wasm64
-  relaxed_simd_wasm32 relaxed_simd_wasm64
-  bulk_memory_wasm32 bulk_memory_wasm64
-  memory_growth_wasm32 memory_growth_wasm64
-  maximum_memory_2gb_wasm32 maximum_memory_2gb_wasm64
-  maximum_memory_4gb_wasm32 maximum_memory_4gb_wasm64
+  basic_wasm32 basic_wasm64_lowered basic_wasm64
+  storage_wasm32 storage_wasm64_lowered storage_wasm64
+  dom_wasm32 dom_wasm64_lowered dom_wasm64
+  fetch_wasm32 fetch_wasm64_lowered fetch_wasm64
+  filesystem_wasm32 filesystem_wasm64_lowered filesystem_wasm64
+  websocket_wasm32 websocket_wasm64_lowered websocket_wasm64
+  exceptions_legacy_wasm32 exceptions_legacy_wasm64_lowered exceptions_legacy_wasm64
+  exceptions_wasm32 exceptions_wasm64_lowered exceptions_wasm64
+  exceptions_js_wasm32 exceptions_js_wasm64_lowered exceptions_js_wasm64
+  simd_wasm32 simd_wasm64_lowered simd_wasm64
+  relaxed_simd_wasm32 relaxed_simd_wasm64_lowered relaxed_simd_wasm64
+  bulk_memory_wasm32 bulk_memory_wasm64_lowered bulk_memory_wasm64
+  memory_growth_wasm32 memory_growth_wasm64_lowered memory_growth_wasm64
+  maximum_memory_2gb_wasm32 maximum_memory_2gb_wasm64_lowered maximum_memory_2gb_wasm64
+  maximum_memory_4gb_wasm32 maximum_memory_4gb_wasm64_lowered maximum_memory_4gb_wasm64
   maximum_memory_8gb_wasm64
-  stack_wasm32 stack_wasm64
-  atomics_wasm32 atomics_wasm64
-  workers_wasm32 workers_wasm64
-  synchronisation_wasm32 synchronisation_wasm64
-  pthreads_wasm32 pthreads_wasm64
-  canvas_wasm32 canvas_wasm64
-  webgl_wasm32 webgl_wasm64
-  webgl2_wasm32 webgl2_wasm64
-  audio_buffer_wasm32 audio_buffer_wasm64
-  audio_wasm32 audio_wasm64
-  webgpu_wasm32 webgpu_wasm64
-  webgpu_compute_wasm32 webgpu_compute_wasm64
-  webgpu_render_wasm32 webgpu_render_wasm64
-  webgpu_indexed_wasm32 webgpu_indexed_wasm64
-  webgpu_uniform_wasm32 webgpu_uniform_wasm64
-  webgpu_bundles_wasm32 webgpu_bundles_wasm64
-  webgpu_worker_wasm32 webgpu_worker_wasm64
-  webgpu_etc2_wasm32 webgpu_etc2_wasm64
-  webgpu_astc_wasm32 webgpu_astc_wasm64
-  webgpu_depth_stencil_wasm32 webgpu_depth_stencil_wasm64
-  webgpu_bc_wasm32 webgpu_bc_wasm64
-  webgpu_indirect_wasm32 webgpu_indirect_wasm64
-  webgpu_timestamp_wasm32 webgpu_timestamp_wasm64
-  webgpu_f16_wasm32 webgpu_f16_wasm64
-  webgpu_float32_filterable_wasm32 webgpu_float32_filterable_wasm64
-  webgpu_bgra8unorm_storage_wasm32 webgpu_bgra8unorm_storage_wasm64
-  webgpu_rg11b10ufloat_wasm32 webgpu_rg11b10ufloat_wasm64
-  webgpu_float32_blendable_wasm32 webgpu_float32_blendable_wasm64
-  webgpu_depth_clip_control_wasm32 webgpu_depth_clip_control_wasm64
-  webgpu_subgroups_wasm32 webgpu_subgroups_wasm64
-  webgpu_clip_distances_wasm32 webgpu_clip_distances_wasm64
-  webgpu_dual_source_blending_wasm32 webgpu_dual_source_blending_wasm64
+  stack_wasm32 stack_wasm64_lowered stack_wasm64
+  atomics_wasm32 atomics_wasm64_lowered atomics_wasm64
+  workers_wasm32 workers_wasm64_lowered workers_wasm64
+  synchronisation_wasm32 synchronisation_wasm64_lowered synchronisation_wasm64
+  pthreads_wasm32 pthreads_wasm64_lowered pthreads_wasm64
+  canvas_wasm32 canvas_wasm64_lowered canvas_wasm64
+  webgl_wasm32 webgl_wasm64_lowered webgl_wasm64
+  webgl2_wasm32 webgl2_wasm64_lowered webgl2_wasm64
+  audio_buffer_wasm32 audio_buffer_wasm64_lowered audio_buffer_wasm64
+  audio_wasm32 audio_wasm64_lowered audio_wasm64
+  webgpu_wasm32 webgpu_wasm64_lowered webgpu_wasm64
+  webgpu_compute_wasm32 webgpu_compute_wasm64_lowered webgpu_compute_wasm64
+  webgpu_render_wasm32 webgpu_render_wasm64_lowered webgpu_render_wasm64
+  webgpu_indexed_wasm32 webgpu_indexed_wasm64_lowered webgpu_indexed_wasm64
+  webgpu_uniform_wasm32 webgpu_uniform_wasm64_lowered webgpu_uniform_wasm64
+  webgpu_bundles_wasm32 webgpu_bundles_wasm64_lowered webgpu_bundles_wasm64
+  webgpu_worker_wasm32 webgpu_worker_wasm64_lowered webgpu_worker_wasm64
+  webgpu_etc2_wasm32 webgpu_etc2_wasm64_lowered webgpu_etc2_wasm64
+  webgpu_astc_wasm32 webgpu_astc_wasm64_lowered webgpu_astc_wasm64
+  webgpu_depth_stencil_wasm32 webgpu_depth_stencil_wasm64_lowered webgpu_depth_stencil_wasm64
+  webgpu_bc_wasm32 webgpu_bc_wasm64_lowered webgpu_bc_wasm64
+  webgpu_indirect_wasm32 webgpu_indirect_wasm64_lowered webgpu_indirect_wasm64
+  webgpu_timestamp_wasm32 webgpu_timestamp_wasm64_lowered webgpu_timestamp_wasm64
+  webgpu_f16_wasm32 webgpu_f16_wasm64_lowered webgpu_f16_wasm64
+  webgpu_float32_filterable_wasm32 webgpu_float32_filterable_wasm64_lowered webgpu_float32_filterable_wasm64
+  webgpu_bgra8unorm_storage_wasm32 webgpu_bgra8unorm_storage_wasm64_lowered webgpu_bgra8unorm_storage_wasm64
+  webgpu_rg11b10ufloat_wasm32 webgpu_rg11b10ufloat_wasm64_lowered webgpu_rg11b10ufloat_wasm64
+  webgpu_float32_blendable_wasm32 webgpu_float32_blendable_wasm64_lowered webgpu_float32_blendable_wasm64
+  webgpu_depth_clip_control_wasm32 webgpu_depth_clip_control_wasm64_lowered webgpu_depth_clip_control_wasm64
+  webgpu_subgroups_wasm32 webgpu_subgroups_wasm64_lowered webgpu_subgroups_wasm64
+  webgpu_clip_distances_wasm32 webgpu_clip_distances_wasm64_lowered webgpu_clip_distances_wasm64
+  webgpu_dual_source_blending_wasm32 webgpu_dual_source_blending_wasm64_lowered webgpu_dual_source_blending_wasm64
 )
 
 # Feature names used by the browser checklist; no build options are assigned here.
@@ -1892,7 +2834,8 @@ configure_file(assets/fixture.txt fixture.txt COPYONLY)
 configure_file(assets/social-preview.jpg social-preview.jpg COPYONLY)
 # One build-generated list is shared by the checklist, iframe runner and smoke test.
 list(JOIN feature_tests "','" feature_names)
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test-list.js" "window.feature_tests = ['${feature_names}'];\n")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test-list.js" "window.feature_tests = ['${feature_names}'];\n"
+  "window.test_modes = [{id: 'wasm32', label: 'wasm32'}, {id: 'wasm64_lowered', label: 'wasm64 → wasm32'}, {id: 'wasm64', label: 'wasm64'}];\n")
 
 foreach(file index.html style.css checklist.js runner.html runner.js smoke.js)
   configure_file(html/${file} ${file} COPYONLY)

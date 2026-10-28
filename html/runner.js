@@ -33,8 +33,9 @@ window.Module = {
   print: text => console.log(text),
   printErr: text => console.error(text)
 };
-const match = /^(\w+)_wasm(32|64)$/.exec(target || '');
-if(!match || !window.feature_tests?.includes(match[1])) {
+const mode = window.test_modes?.find(mode => target?.endsWith(`_${mode.id}`));
+const feature = mode && target.slice(0, -mode.id.length - 1);
+if(!window.feature_tests?.includes(feature)) {
   window.report_result(false, 'Unknown test target');
 } else {
   const script = document.createElement('script');
